@@ -17,33 +17,53 @@ import { Link } from "react-router-dom";
 import Feedback from "../components/common/Feedback";
 import Partner from "../components/home/Partner";
 import ListStaff from "../components/common/ListStaff";
+import axios from "axios";
+
+import React, { useState, useEffect } from "react";
 
 const Home = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/v1/categories"
+        );
+        setCategories(response.data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const productsCate1 = [
     {
       id: 1,
-      image: categoryImage1,
+      image: "category-1.1.jpg",
       name: "Bộ Sofa Tân Cổ Điển SF71-123",
       price: "173.000.000 ₫",
       initPrice: "193.000.000 ₫",
     },
     {
       id: 2,
-      image: categoryImage1,
+      image: "category-1.1.jpg",
       name: "Bộ Sofa Tân Cổ Điển SF71-123",
       price: "173.000.000 ₫",
       initPrice: "193.000.000 ₫",
     },
     {
       id: 3,
-      image: categoryImage1,
+      image: "category-1.1.jpg",
       name: "Bộ Sofa Tân Cổ Điển SF71-123",
       price: "173.000.000 ₫",
       initPrice: "193.000.000 ₫",
     },
     {
       id: 4,
-      image: categoryImage1,
+      image: "category-1.1.jpg",
       name: "Bộ Sofa Tân Cổ Điển SF71-123",
       price: "173.000.000 ₫",
       initPrice: "193.000.000 ₫",
@@ -53,28 +73,28 @@ const Home = () => {
   const productsCate2 = [
     {
       id: 1,
-      image: categoryImage2,
+      image: "category-2.1.jpg",
       name: "Bộ Sofa 3 Băng Góc Phải SF672-Nano1-28",
       price: "26.600.000 ₫",
       initPrice: "29.600.000 ₫",
     },
     {
       id: 2,
-      image: categoryImage2,
+      image: "category-2.1.jpg",
       name: "Bộ Sofa 3 Băng Góc Phải SF672-Nano1-28",
       price: "26.600.000 ₫",
       initPrice: "29.600.000 ₫",
     },
     {
       id: 3,
-      image: categoryImage2,
+      image: "category-2.1.jpg",
       name: "Bộ Sofa 3 Băng Góc Phải SF672-Nano1-28",
       price: "26.600.000 ₫",
       initPrice: "29.600.000 ₫",
     },
     {
       id: 4,
-      image: categoryImage2,
+      image: "category-2.1.jpg",
       name: "Bộ Sofa 3 Băng Góc Phải SF672-Nano1-28",
       price: "26.600.000 ₫",
       initPrice: "29.600.000 ₫",
@@ -84,28 +104,28 @@ const Home = () => {
   const productsCate3 = [
     {
       id: 1,
-      image: categoryImage3,
+      image: "category-3.1.jpg",
       name: "Bộ Phòng Ngủ 1M8 Cổ Điển Trắng Sứ Cao Cấp GI3028-18",
       price: "99.000.000 ₫",
       initPrice: "120.000.000 ₫",
     },
     {
       id: 2,
-      image: categoryImage3,
+      image: "category-3.1.jpg",
       name: "Bộ Phòng Ngủ 1M8 Cổ Điển Trắng Sứ Cao Cấp GI3028-18",
       price: "99.000.000 ₫",
       initPrice: "120.000.000 ₫",
     },
     {
       id: 3,
-      image: categoryImage3,
+      image: "category-3.1.jpg",
       name: "Bộ Phòng Ngủ 1M8 Cổ Điển Trắng Sứ Cao Cấp GI3028-18",
       price: "99.000.000 ₫",
       initPrice: "120.000.000 ₫",
     },
     {
       id: 4,
-      image: categoryImage3,
+      image: "category-3.1.jpg",
       name: "Bộ Phòng Ngủ 1M8 Cổ Điển Trắng Sứ Cao Cấp GI3028-18",
       price: "99.000.000 ₫",
       initPrice: "120.000.000 ₫",
@@ -115,28 +135,28 @@ const Home = () => {
   const productsCate4 = [
     {
       id: 1,
-      image: categoryImage4,
+      image: "category-4.1.jpg",
       name: "Bàn Ăn Gỗ Sồi Nhập Khẩu Phong Cách Tân Cổ Điển BH8311",
       price: "19.600.000 ₫",
       initPrice: "24.600.000 ₫",
     },
     {
       id: 2,
-      image: categoryImage4,
+      image: "category-4.1.jpg",
       name: "Bàn Ăn Gỗ Sồi Nhập Khẩu Phong Cách Tân Cổ Điển BH8311",
       price: "19.600.000 ₫",
       initPrice: "24.600.000 ₫",
     },
     {
       id: 3,
-      image: categoryImage4,
+      image: "category-4.1.jpg",
       name: "Bàn Ăn Gỗ Sồi Nhập Khẩu Phong Cách Tân Cổ Điển BH8311",
       price: "19.600.000 ₫",
       initPrice: "24.600.000 ₫",
     },
     {
       id: 4,
-      image: categoryImage4,
+      image: "category-4.1.jpg",
       name: "Bàn Ăn Gỗ Sồi Nhập Khẩu Phong Cách Tân Cổ Điển BH8311",
       price: "19.600.000 ₫",
       initPrice: "24.600.000 ₫",

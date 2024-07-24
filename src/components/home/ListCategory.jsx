@@ -1,7 +1,26 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
+import React, { useState, useEffect } from "react";
 
 const ListCategory = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/v1/categories"
+        );
+        setCategories(response.data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const list = [
     {
       svg: `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">

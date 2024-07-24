@@ -1,7 +1,20 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import { Link } from "react-router-dom";
 
+const addProductToLocalStorage = (product) => {
+  let products = localStorage.getItem("carts");
+  products = products ? JSON.parse(products) : [];
+  products.push(product);
+  console.log(products);
+  localStorage.setItem("carts", JSON.stringify(products));
+};
+
 const ProductItem = (props) => {
+  const addToCart = () => {
+    addProductToLocalStorage(props.product);
+  };
+
   return (
     <div
       className={
@@ -11,16 +24,16 @@ const ProductItem = (props) => {
       }
     >
       <div className="overflow-hidden">
-        <Link to={"product/1"}>
+        <Link to={`product/${props.product._id}`}>
           <img
-            src={props.product.image}
+            src={`src/assets/images/${props.product.image}`}
             alt="product image"
             className="hover:scale-110 duration-500"
           />
         </Link>
       </div>
       <div className="p-[10px]">
-        <Link to={"product/1"}>
+        <Link to={`product/${props.product._id}`}>
           <h3 className="text-brown-strong text-sm mb-2 font-bold">
             {props.product.name}
           </h3>
@@ -32,11 +45,11 @@ const ProductItem = (props) => {
 
           <div className="mb-1">
             <Link to={"/"}>
-              <i class="fa-solid fa-heart text-xl mr-2 text-brown-strong hover:text-red-600 duration-200"></i>
+              <i className="fa-solid fa-heart text-xl mr-2 text-brown-strong hover:text-red-600 duration-200"></i>
             </Link>
-            <Link to={"/"}>
-              <i class="fa-solid fa-basket-shopping text-xl text-brown-strong hover:text-brown-light"></i>
-            </Link>
+            <div onClick={addToCart}>
+              <i className="fa-solid fa-basket-shopping text-xl text-brown-strong hover:text-brown-light"></i>
+            </div>
           </div>
         </div>
 

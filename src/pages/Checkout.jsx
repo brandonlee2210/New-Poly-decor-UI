@@ -1,9 +1,13 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import vnpay from "../assets/images/VNPAY.webp";
 import InfoUserForm from "../components/common/InfoUserForm";
+import { CartContext } from "../CartContext";
+import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
+  const { carts, addCart, removeCart } = useContext(CartContext);
+  const navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -42,7 +46,7 @@ const Checkout = () => {
         }
       );
 
-      setDeliveryFee(formatCurrencyVND(data.data.total));
+      setDeliveryFee(data.data.total);
     } catch (error) {
       console.log(error);
     }
@@ -102,9 +106,57 @@ const Checkout = () => {
     }
   }, [ward]);
 
+  const totalQuantity = carts.length;
+  const totalPrice = carts.reduce((total, product) => total + product.price, 0);
+  const finalPrice = totalPrice;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let address = `Tỉnh ${
+      provinces.find((x) => x.ProvinceID == province)?.ProvinceName
+    }, ${districts.find((x) => x.DistrictID == district)?.DistrictName}, ${
+      wards.find((x) => x.WardCode == ward)?.WardName
+    }`;
+
+    let orderDetailsData = carts.map((x) => {
+      return {
+        ...x,
+        variantID: x._id,
+      };
+    });
+
+    orderDetailsData.forEach((x) => {
+      delete x._id;
+    });
+
+    let orderDataSave = {
+      orderData: {
+        address: address,
+        total: totalPrice + deliveryFee,
+        userID: "60d5ec49f8d2c72b8c8e4b8b",
+      },
+      orderDetailsData,
+    };
+
+    let res = await axios.post(
+      "http://localhost:8000/api/v1/orders/save-order",
+      orderDataSave
+    );
+
+    console.log(res);
+
+    navigate("/result-checkout");
+    // Your code here to submit the form
+  };
+
   return (
     <div className="mt-14 container2">
-      <form action="" className="grid grid-cols-[6fr_6fr_4fr] gap-5">
+      <form
+        action=""
+        className="grid grid-cols-[6fr_6fr_4fr] gap-5"
+        onSubmit={handleSubmit}
+      >
         <div>
           <h2 className="text-2xl font-semibold text-brown-strong mb-3">
             Thông tin giao hàng
@@ -172,22 +224,30 @@ const Checkout = () => {
           <h2 className="text-2xl font-bold ">Tổng tiền giỏ hàng</h2>
           <div className="flex items-center justify-between mt-4">
             <span>Tổng sản phẩm</span>
-            <span>10</span>
+            <span>{totalQuantity}</span>
           </div>
 
           <div className="flex items-center justify-between mt-4">
             <span>Tổng tiền hàng</span>
-            <span className="font-semibold">100.000.000 ₫</span>
+            <span className="font-semibold">
+              {finalPrice.toLocaleString()} ₫
+            </span>
           </div>
 
           <div className="flex items-center justify-between mt-4">
             <span>Phí vận chuyển</span>
-            <span className="font-semibold">{deliveryFee}</span>
+            <span className="font-semibold">
+              {deliveryFee.toLocaleString()}
+            </span>
           </div>
 
           <div className="flex items-center justify-between mt-4">
             <span>Thành tiền</span>
-            <span className="font-semibold">100.000.000 ₫</span>
+            <span className="font-semibold">
+              {ward
+                ? (finalPrice + deliveryFee).toLocaleString()
+                : "Chưa xác định"}
+            </span>
           </div>
 
           <button

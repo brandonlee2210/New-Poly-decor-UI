@@ -9,24 +9,32 @@ import Cart from "./pages/Cart";
 import Wishlist from "./pages/Wishlist";
 import Checkout from "./pages/Checkout";
 import UpdateInfo from "./pages/UpdateInfo";
+import ResultCheckout from "./pages/ResultCheckout";
+import { CartProvider } from "./CartContext.jsx";
+import { LoginProvider } from "./LoginContext.jsx";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<ClientLayout />}>
-          <Route index element={<Home />} />
-          <Route path="product/:id" element={<ProductDetail />} />
-          <Route path="category/:id" element={<Category />} />
-          <Route path="cart" element={<Cart />} />
-          <Route path="checkout" element={<Checkout />} />
-          <Route path="wishlist" element={<Wishlist />} />
-          <Route path="update-info" element={<UpdateInfo />} />
-        </Route>
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-      </Routes>
-    </BrowserRouter>
+    <LoginProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<ClientLayout />}>
+              <Route index element={<Home />} />
+              <Route path="product/:id" element={<ProductDetail />} />
+              <Route path="category/:id" element={<Category />} />
+              <Route path="cart" element={<Cart />} />
+              <Route path="checkout" element={<Checkout />} />
+              <Route path="wishlist" element={<Wishlist />} />
+              <Route path="result-checkout" element={<ResultCheckout />} />
+              <Route path="update-info" element={<UpdateInfo />} />
+            </Route>
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
+    </LoginProvider>
   );
 }
 

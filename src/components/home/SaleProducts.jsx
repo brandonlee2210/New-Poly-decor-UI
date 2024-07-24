@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
@@ -8,8 +8,17 @@ import saleProductImage1 from "../../assets/images/sale-product-1.jpg";
 import saleProductImage2 from "../../assets/images/sale-product-2.jpg";
 import ProductItem from "../common/ProductItem";
 
+import { getProductsPaginate } from "../../api/api.js";
+
+const addProductToLocalStorage = (product) => {
+  let products = localStorage.getItem("saleProducts");
+  products = products ? JSON.parse(products) : [];
+  products.push(product);
+  localStorage.setItem("saleProducts", JSON.stringify(products));
+};
+
 const SaleProducts = () => {
-  const saleProducts = [
+  const saleProducts2 = [
     {
       id: 1,
       image: saleProductImage1,
@@ -53,6 +62,21 @@ const SaleProducts = () => {
       initPrice: "44.000.000 ₫",
     },
   ];
+
+  const [saleProducts, setSaleProducts] = useState(saleProducts2);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const response = await getProductsPaginate(1, 6);
+      setSaleProducts(response.data);
+    };
+
+    fetchProducts();
+    return () => {
+      // cleanup
+    };
+  }, []);
+
   return (
     <div className="bg-brown-light px-4 pb-[30px] pt-4 mb-[30px]  rounded-lg">
       <h2 className="title pb-6">Ưu đãi không thể bỏ lỡ tại PolyDecor.</h2>

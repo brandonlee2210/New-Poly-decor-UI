@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { CartContext } from "../CartContext";
+
+// import use param from react dom
+import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "swiper/css";
 import { Autoplay } from "swiper/modules";
@@ -6,9 +10,36 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import categoryImage1 from "../assets/images/category-1.1.jpg";
 import rightProductDetail from "../assets/images/right-product-detail.jpg";
 import ProductItem from "../components/common/ProductItem";
-import InDecreaseQuantity from "../components/common/InDecreaseQuantity";
+// import InDecreaseQuantity from "../components/common/InDecreaseQuantity";
+import { getProductById } from "../api/api";
+import { Button, message } from "antd";
+
+const colors = [
+  {
+    name: "Màu đen",
+    id: "bg-brown-strong",
+  },
+  {
+    name: "Màu sáng",
+    id: "bg-brown-light",
+  },
+  {
+    name: "Màu vàng",
+    id: "bg-yellow-main",
+  },
+  {
+    name: "Màu trắng",
+    id: "bg-white",
+  },
+];
+
+const materials = ["Gỗ sồi", "Gỗ lim", "Gỗ hoàng đàn", "Gỗ hương", "Gỗ óc chó"];
 
 const ProductDetail = () => {
+  const { carts, addCart, removeCart } = useContext(CartContext);
+
+  console.log("carts", carts);
+
   const productsCate = [
     {
       id: 1,
@@ -81,33 +112,49 @@ const ProductDetail = () => {
       initPrice: "193.000.000 ₫",
     },
   ];
-  const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState({});
   const [activeColor, setActiveColor] = useState("bg-brown-strong");
 
-  const colors = [
-    "bg-brown-strong",
-    "bg-brown-light",
-    "bg-yellow-main",
-    "bg-white",
-  ];
+  // get params
+  const { id } = useParams();
 
-  const materials = [
-    "Gỗ sồi",
-    "Gỗ lim",
-    "Gỗ hoàng đàn",
-    "Gỗ hương",
-    "Gỗ óc chó",
-  ];
+  const [size, setSize] = useState("M");
+  const [material, setMaterial] = useState(materials[0]);
+  const [color, setColor] = useState(colors[0]);
+  const [isFavorite, setIsFavorite] = useState(false);
 
-  const increment = () => {
-    setQuantity(quantity + 1);
+  const handleFavoriteClick = () => {
+    setIsFavorite(!isFavorite);
   };
 
-  const decrement = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-    }
+  const handleSizeChange = (event) => {
+    setSize(event.target.value);
   };
+
+  const handleMaterialChange = (event) => {
+    setMaterial(event.target.value);
+  };
+
+  const handleColorChange = (event) => {
+    setColor(event.target.value);
+  };
+
+  const addToCart = () => {
+    // TODO: add to cart logic
+    let cartData = {
+      ...product,
+      material,
+      color: colors.find((c) => c.id === activeColor).name,
+    };
+    addCart(cartData);
+    message.success(`Thêm thành công ${product.name} vào giỏ hàng`);
+  };
+
+  useEffect(() => {
+    getProductById(id).then((res) => {
+      setProduct(res);
+    });
+  }, [id]);
 
   const handleColorClick = (color) => {
     setActiveColor(color);
@@ -117,33 +164,36 @@ const ProductDetail = () => {
     <div className="container mt-[80px]">
       <div className="flex justify-between gap-[30px]">
         <div>
-          <img src={productsCate[0].image} alt="product image" />
+          <img
+            src={`/src/assets/images/${product.image}`}
+            alt="product image"
+          />
 
           <h2 className="text-3xl font-bold text-brown-strong mt-5">
-            {productsCate[0].name}
+            {product.name}
           </h2>
 
           <div className="mt-[25px]">
-            <span className="text-brown-light mr-1">Danh mục:</span>Sofa Tân Cổ
-            Điển, Sofa nhập khẩu, Sofa phòng khách
+            <span className="text-brown-light mr-1">Danh mục:</span>
+            {product.categoryName}
           </div>
 
           <div className="flex items-center gap-2 mt-2">
             <div>
-              <i class="fa-solid fa-star text-yellow-500"></i>
-              <i class="fa-solid fa-star text-yellow-500"></i>
-              <i class="fa-solid fa-star text-yellow-500"></i>
-              <i class="fa-solid fa-star text-yellow-500"></i>
-              <i class="fa-regular fa-star  text-yellow-500"></i>
+              <i className="fa-solid fa-star text-yellow-500"></i>
+              <i className="fa-solid fa-star text-yellow-500"></i>
+              <i className="fa-solid fa-star text-yellow-500"></i>
+              <i className="fa-solid fa-star text-yellow-500"></i>
+              <i className="fa-regular fa-star  text-yellow-500"></i>
             </div>
             |<div className="text-gray-500">1000 lượt mua</div>
           </div>
 
           <div className="mt-3 text-lg text-brown-light line-through font-semibold">
-            Giá gốc: {productsCate[0].initPrice}
+            Giá gốc: {product.price + 1000000}
           </div>
           <div className="mt-3 text-3xl font-bold text-red-600">
-            Giá: {productsCate[0].price}
+            Giá: {product.price}
           </div>
 
           <div className="mt-5 flex items-center gap-3">
@@ -153,11 +203,11 @@ const ProductDetail = () => {
             <div className="flex items-center gap-5">
               {colors.map((color) => (
                 <span
-                  key={color}
-                  className={`w-7 h-7 duration-300 cursor-pointer hover:scale-125 shadow-[0_0_6px_rgba(0,0,0,0.5)] ${color} ${
-                    activeColor === color ? "scale-125" : ""
-                  }`}
-                  onClick={() => handleColorClick(color)}
+                  key={color.id}
+                  className={`w-7 h-7 duration-300 cursor-pointer hover:scale-125 shadow-[0_0_6px_rgba(0,0,0,0.5)] ${
+                    color.id
+                  } ${activeColor === color.id ? "scale-125" : ""}`}
+                  onClick={() => handleColorClick(color.id)}
                 ></span>
               ))}
             </div>
@@ -182,29 +232,29 @@ const ProductDetail = () => {
               ))}
             </select>
           </div>
-
+          {/* 
           <InDecreaseQuantity
             quantity={quantity}
             increment={increment}
             decrement={decrement}
-          />
+          /> */}
 
-          <div className="mt-5 text-lg font-semibold text-gray-500">
-            <span className=" text-brown-strong mr-2">Số lượng: </span> 9999
-          </div>
+          {/* <div className="mt-5 text-lg font-semibold text-gray-500">
+            <span className=" text-brown-strong mr-2">Số lượng: </span>{" "}
+            {product.stock}
+          </div> */}
 
           <div className="grid grid-cols-2 gap-6 mt-10">
-            <Link to={"/"}>
-              <div className="bg-brown-light text-brown-strong flex items-center justify-center gap-1 py-4 rounded-lg text-xl font-bold duration-200 border-2 hover:bg-white hover:border-brown-strong hover:border-2">
-                <i class="fa-regular fa-credit-card"></i> Mua ngay
-              </div>
-            </Link>
+            <div className="bg-brown-light text-brown-strong flex items-center justify-center gap-1 py-4 rounded-lg text-xl font-bold duration-200 border-2 hover:bg-white hover:border-brown-strong hover:border-2">
+              <i className="fa-regular fa-credit-card"></i> Mua ngay
+            </div>
 
-            <Link to={"/"}>
-              <div className="bg-brown-light text-brown-strong flex items-center justify-center gap-1 py-4 rounded-lg text-xl font-bold duration-200 border-2 hover:bg-white hover:border-brown-strong hover:border-2">
-                <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
-              </div>
-            </Link>
+            <div
+              onClick={addToCart}
+              className="bg-brown-light text-brown-strong flex items-center justify-center gap-1 py-4 rounded-lg text-xl font-bold duration-200 border-2 hover:bg-white hover:border-brown-strong hover:border-2"
+            >
+              <i className="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
+            </div>
           </div>
         </div>
         <div>
@@ -239,15 +289,12 @@ const ProductDetail = () => {
           <tbody>
             <tr>
               <td className="border border-[#eaeaea] p-3">Tên sản phẩm</td>
-              <td className="border border-[#eaeaea] p-3">
-                Bộ Sofa Tân Cổ Điển SF71-123
-              </td>
+              <td className="border border-[#eaeaea] p-3">{product.name}</td>
             </tr>
             <tr className="bg-[#f9f9f9]">
               <td className="border border-[#eaeaea] p-3">Chất liệu</td>
               <td className="border border-[#eaeaea] p-3">
-                Khung gỗ Sồi OAK tự nhiên , Toàn bộ bề mặt tiếp xúc là da bò tự
-                nhiên, bề mặt không tiếp xúc là da nhân tạo cao cấp.
+                {product.description}
               </td>
             </tr>
             <tr>
@@ -257,7 +304,7 @@ const ProductDetail = () => {
                 3: L2430*W1000*H1380mm
               </td>
             </tr>
-            <tr className="bg-[#f9f9f9]">
+            {/* <tr className="bg-[#f9f9f9]">
               <td className="border border-[#eaeaea] p-3">Màu sắc</td>
               <td className="border border-[#eaeaea] p-3">Nâu cà phê</td>
             </tr>
@@ -266,7 +313,7 @@ const ProductDetail = () => {
               <td className="border border-[#eaeaea] p-3">
                 Neoclassical French
               </td>
-            </tr>
+            </tr> */}
             <tr className="bg-[#f9f9f9]">
               <td className="border border-[#eaeaea] p-3">Xuất xứ</td>
               <td className="border border-[#eaeaea] p-3">Nhập khẩu.</td>

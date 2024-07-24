@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Logo from "./Logo";
 import { Link } from "react-router-dom";
 import { Dropdown } from "antd";
+import { CartContext } from "../../CartContext";
+import { LoginContext } from "../../LoginContext";
+import axios from "axios";
 
 const loggedItems = [
   {
@@ -26,7 +29,30 @@ const loginItems = [
 ];
 
 const Header = () => {
-  const [logged, setLogged] = useState(true);
+  const [logged, setLogged] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  const { carts, addCart, removeCart, whistlists } = useContext(CartContext);
+
+  const { isLoggedIn, login, logout } = useContext(LoginContext);
+
+  console.log("isLoggedIn", isLoggedIn);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/v1/categories"
+        );
+        setCategories(response.data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   // setLogged(true);
   return (
     <div className="header sticky top-0 left-0 right-0 z-10">
@@ -44,7 +70,7 @@ const Header = () => {
                 placeholder="Nhập để tìm kiếm sản phẩm bạn muốn"
               />
               <button className="absolute top-[50%] left-2 translate-y-[-50%] text-brown-strong text-xl">
-                <i class="fa-solid fa-magnifying-glass"></i>
+                <i className="fa-solid fa-magnifying-glass"></i>
               </button>
             </form>
           </div>
@@ -53,19 +79,23 @@ const Header = () => {
             to={"wishlist"}
             className="wishlist text-sm text-brown-strong relative"
           >
-            <i class="fa-solid fa-heart text-xl mr-1 hover:text-red-600 duration-200"></i>
+            <i className="fa-solid fa-heart text-xl mr-1 hover:text-red-600 duration-200"></i>
             Yêu thích
-            <span className="absolute top-0 left-0 translate-x-[-60%] translate-y-[-60%] text-white text-xs w-5 h-5 flex justify-center items-center bg-red-500 rounded-full">
-              10
-            </span>
+            {whistlists && whistlists.length > 0 ? (
+              <span className="absolute top-0 left-0 translate-x-[-60%] translate-y-[-60%] text-white text-xs w-5 h-5 flex justify-center items-center bg-red-500 rounded-full">
+                {whistlists?.length}
+              </span>
+            ) : null}
           </Link>
 
           <Link to={"cart"} className="cart text-sm text-brown-strong relative">
-            <i class="fa-solid fa-basket-shopping text-xl mr-2"></i>
+            <i className="fa-solid fa-basket-shopping text-xl mr-2"></i>
             Giỏ hàng
-            <span className="absolute top-0 left-0 translate-x-[-60%] translate-y-[-60%] text-white text-xs w-5 h-5 flex justify-center items-center bg-red-500 rounded-full">
-              10
-            </span>
+            {carts && carts.length > 0 ? (
+              <span className="absolute top-0 left-0 translate-x-[-60%] translate-y-[-60%] text-white text-xs w-5 h-5 flex justify-center items-center bg-red-500 rounded-full">
+                {carts?.length}
+              </span>
+            ) : null}
           </Link>
 
           <div className="hotline bg-brown-strong p-2 px-4 rounded-lg">
@@ -73,14 +103,14 @@ const Header = () => {
               href="tel:0366027883"
               className="flex items-center gap-3 text-brown-light font-bold text-sm"
             >
-              <i class="fa-solid fa-phone-volume "></i>
+              <i className="fa-solid fa-phone-volume "></i>
               <span className="uppercase">Hotline</span>
               <span>0366027883</span>
             </a>
           </div>
 
           <div className="user">
-            {logged ? (
+            {isLoggedIn ? (
               <Dropdown
                 menu={{
                   items: loggedItems,
@@ -107,7 +137,7 @@ const Header = () => {
                 arrow
               >
                 <div className="text-brown-strong ">
-                  <i class="fa-solid fa-user"></i> Đăng ký/nhập
+                  <i className="fa-solid fa-user"></i> Đăng ký/nhập
                 </div>
               </Dropdown>
             )}
@@ -120,24 +150,11 @@ const Header = () => {
         <div className="container header-bottom">
           <nav>
             <ul className="flex items-center gap-10 py-4 font-semibold text-brown-light uppercase">
-              <li>
-                <Link to={"category/1"}>Sofa</Link>
-              </li>
-              <li>
-                <Link to={"category/1"}>Bàn trà</Link>
-              </li>
-              <li>
-                <Link to={"category/1"}>Kệ tivi</Link>
-              </li>
-              <li>
-                <Link to={"category/1"}>Bàn ghế ăn</Link>
-              </li>
-              <li>
-                <Link to={"category/1"}>Giường ngủ</Link>
-              </li>
-              <li>
-                <Link to={"category/1"}>Tủ quần áo</Link>
-              </li>
+              {categories.map((category) => (
+                <li key={category.id}>
+                  <Link to={`/category/${category._id}`}>{category.name}</Link>
+                </li>
+              ))}
             </ul>
           </nav>
         </div>
