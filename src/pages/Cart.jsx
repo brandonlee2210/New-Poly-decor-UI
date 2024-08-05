@@ -1,15 +1,20 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { CartContext } from "../CartContext";
-
 import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { carts, addCart, removeCart } = useContext(CartContext);
+  const { carts, removeCart, increaseQuantity, decreaseQuantity } =
+    useContext(CartContext);
 
   const isCartEmpty = carts.length === 0;
-
-  const totalQuantity = carts.length;
-  const totalPrice = carts.reduce((total, product) => total + product.price, 0);
+  const totalQuantity = carts.reduce(
+    (total, product) => +total + +product.quantity,
+    0
+  );
+  const totalPrice = carts.reduce(
+    (total, product) => total + product.price * product.quantity,
+    0
+  );
   const finalPrice = totalPrice;
 
   return (
@@ -35,6 +40,7 @@ const Cart = () => {
                 <th className="text-brown-strong font-semibold text-lg">
                   Sản phẩm
                 </th>
+
                 <th className="text-brown-strong font-semibold text-lg">
                   Số lượng
                 </th>
@@ -67,15 +73,55 @@ const Cart = () => {
                     </div>
                   </td>
                   <td className="text-brown-strong p-3 align-middle">
-                    {product.quantity || 1}
+                    <div className="flex gap-2">
+                      <button
+                        className=" 
+                      w-8
+                      bg-brown-light
+                      hover:bg-brown-dark
+                      :focus:bg-brown-dark
+                      focus:outline-none
+                      :focus:ring-2
+                      ring-offset-2
+                      ring-blue-500
+                      "
+                        onClick={() => decreaseQuantity(product._id)}
+                      >
+                        -
+                      </button>
+                      {product.quantity}
+                      {/* css lại 2 button + và - */}
+                      <button
+                        className="
+                      w-8
+                      bg-brown-light
+                      hover:bg-brown-dark
+
+                      :focus:bg-brown-dark
+                      focus:outline-none
+                      :focus:ring-2
+                      ring-offset-2
+                      ring-blue-500
+                      
+                    "
+                        onClick={() => increaseQuantity(product._id)}
+                      >
+                        +
+                      </button>
+                    </div>
                   </td>
                   <td className="text-brown-strong p-3 text-lg font-semibold">
                     {product.price.toLocaleString()} đ
                   </td>
+                  <td className="text-brown-strong p-3 text-lg font-semibold">
+                    {(product.price * product.quantity).toLocaleString()} đ
+                  </td>
                   <td className="text-brown-strong p-3 text-xl hover:text-red-600 cursor-pointer">
                     <i
                       className="fa-regular fa-trash-can"
-                      onClick={() => removeCart(product._id)}
+                      onClick={() =>
+                        removeCart(product._id, product.color, product.material)
+                      }
                     ></i>
                   </td>
                 </tr>
@@ -107,28 +153,18 @@ const Cart = () => {
             <span>Tổng sản phẩm</span>
             <span>{totalQuantity}</span>
           </div>
-
           <div className="flex items-center justify-between mt-4">
             <span>Tổng tiền hàng</span>
             <span className="font-semibold">
               {totalPrice.toLocaleString()} ₫
             </span>
           </div>
-
           <div className="flex items-center justify-between mt-4">
             <span>Thành tiền</span>
             <span className="font-semibold">
               {finalPrice.toLocaleString()} ₫
             </span>
           </div>
-
-          {/* <div className="flex items-center justify-between mt-4">
-          <span>Tạm tính</span>
-          <span className="font-semibold">
-            {(finalPrice + 100000).toLocaleString()} ₫
-          </span>
-        </div> */}
-
           <Link
             to={"/checkout"}
             className="block mt-5 text-center py-3 text-lg font-semibold uppercase rounded-lg bg-brown-light text-white border-2 border-brown-light duration-200 hover:text-brown-light hover:border-brown-light hover:bg-white"

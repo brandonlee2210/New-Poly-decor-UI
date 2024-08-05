@@ -24,7 +24,7 @@ const ProductItem = (props) => {
       }
     >
       <div className="overflow-hidden">
-        <Link to={`product/${props.product._id}`}>
+        <Link to={`/product/${props.product._id}`}>
           <img
             src={`src/assets/images/${props.product.image}`}
             alt="product image"
@@ -33,7 +33,7 @@ const ProductItem = (props) => {
         </Link>
       </div>
       <div className="p-[10px]">
-        <Link to={`product/${props.product._id}`}>
+        <Link to={`/product/${props.product._id}`}>
           <h3 className="text-brown-strong text-sm mb-2 font-bold">
             {props.product.name}
           </h3>

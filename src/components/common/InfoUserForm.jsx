@@ -89,6 +89,16 @@ const InfoUserForm = (props) => {
           Errorrrrrrrrr rrrrrrrrrrrrrrrrrrrrrrr
         </span>
       </div>
+      <div className="mt-5">
+        <input
+          type="text"
+          placeholder="Email"
+          className="outline-none border border-brown-light rounded-lg px-5 py-3 w-full placeholder:text-brown-strong"
+        />
+        <span className="text-red-500 text-sm hidden">
+          Errorrrrrrrrr rrrrrrrrrrrrrrrrrrrrrrr
+        </span>
+      </div>
     </>
   );
 };

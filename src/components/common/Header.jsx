@@ -89,13 +89,21 @@ const Header = () => {
           </Link>
 
           <Link to={"cart"} className="cart text-sm text-brown-strong relative">
-            <i className="fa-solid fa-basket-shopping text-xl mr-2"></i>
+            <i className="fa-solid fa-cart-shopping text-xl mr-2"></i>
             Giỏ hàng
             {carts && carts.length > 0 ? (
               <span className="absolute top-0 left-0 translate-x-[-60%] translate-y-[-60%] text-white text-xs w-5 h-5 flex justify-center items-center bg-red-500 rounded-full">
                 {carts?.length}
               </span>
             ) : null}
+          </Link>
+
+          <Link
+            to={"history"}
+            className="cart text-sm text-brown-strong relative"
+          >
+            <i className="fa-solid fa-basket-shopping text-xl mr-2"></i>
+            Đơn hàng
           </Link>
 
           <div className="hotline bg-brown-strong p-2 px-4 rounded-lg">
@@ -152,7 +160,7 @@ const Header = () => {
             <ul className="flex items-center gap-10 py-4 font-semibold text-brown-light uppercase">
               {categories.map((category) => (
                 <li key={category.id}>
-                  <Link to={`/category/${category._id}`}>{category.name}</Link>
+                  <Link to={`/category/${category.name}`}>{category.name}</Link>
                 </li>
               ))}
             </ul>
