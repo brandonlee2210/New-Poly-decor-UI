@@ -1,41 +1,25 @@
-// CardContext.js
+// CartContext.js
 import React, { createContext, useState, useEffect } from "react";
 
 const CartContext = createContext();
 
 const CartProvider = ({ children }) => {
   const [carts, setCarts] = useState([]);
-
   const [whistlists, setWhistlists] = useState([]);
 
   useEffect(() => {
-    // Load carts from localStorage on component mount
     const storedCarts = JSON.parse(localStorage.getItem("carts")) || [];
     setCarts(storedCarts);
   }, []);
 
-  // Update localStorage whenever carts change
-  // useEffect(() => {
-  //   localStorage.setItem("carts", JSON.stringify(carts));
-  // }, [carts]);
-
-  // useEffect(() => {
-  //   localStorage.setItem("whistlists", JSON.stringify(whistlists));
-  // }, [whistlists]);
-
   const addWhistlist = (newProduct) => {
-    // Check if the product already exists in the whistlists array
     const existingWhistlist = whistlists.find(
       (product) => product._id === newProduct._id
     );
     if (existingWhistlist) {
       return;
     }
-
-    // If it doesn't, add the product to the whistlists array
     setWhistlists([...whistlists, newProduct]);
-
-    // Update localStorage
     localStorage.setItem(
       "whistlists",
       JSON.stringify([...whistlists, newProduct])
@@ -50,7 +34,6 @@ const CartProvider = ({ children }) => {
   };
 
   const addCart = (newCart) => {
-    // check if color and material are already
     const existingCartColorMaterial = carts.find(
       (cart) =>
         cart._id === newCart._id &&
@@ -58,23 +41,49 @@ const CartProvider = ({ children }) => {
         cart.material === newCart.material
     );
 
-    // If it does, update the quantity instead of adding a new one
+    console.log(newCart.quantity, "quantity");
     if (existingCartColorMaterial) {
-      existingCartColorMaterial.quantity += newCart.quantity;
+      existingCartColorMaterial.quantity += +newCart.quantity;
       return;
     }
 
-    // If it doesn't, add the new cart to the carts array
-    newCart.quantity = 1; // Set initial quantity to 1 for new carts
-
     setCarts([...carts, newCart]);
-    // set to local storage
     localStorage.setItem("carts", JSON.stringify([...carts, newCart]));
   };
 
-  const removeCart = (cardId) => {
-    const updatedCarts = carts.filter((card) => card._id !== cardId);
+  const removeCart = (cartId, color, material) => {
+    const updatedCarts = carts.filter(
+      (cart) =>
+        !(
+          cart._id === cartId &&
+          cart.color === color &&
+          cart.material === material
+        )
+    );
     setCarts(updatedCarts);
+    localStorage.setItem("carts", JSON.stringify(updatedCarts));
+  };
+
+  const increaseQuantity = (productId) => {
+    const updatedCarts = carts.map((product) => {
+      if (product._id === productId) {
+        return { ...product, quantity: product.quantity + 1 };
+      }
+      return product;
+    });
+    setCarts(updatedCarts);
+    localStorage.setItem("carts", JSON.stringify(updatedCarts));
+  };
+
+  const decreaseQuantity = (productId) => {
+    const updatedCarts = carts.map((product) => {
+      if (product._id === productId && product.quantity > 1) {
+        return { ...product, quantity: product.quantity - 1 };
+      }
+      return product;
+    });
+    setCarts(updatedCarts);
+    localStorage.setItem("carts", JSON.stringify(updatedCarts));
   };
 
   return (
@@ -86,6 +95,8 @@ const CartProvider = ({ children }) => {
         whistlists,
         addWhistlist,
         removeWhistlist,
+        increaseQuantity,
+        decreaseQuantity,
       }}
     >
       {children}

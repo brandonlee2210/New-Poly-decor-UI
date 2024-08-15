@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import bannerCategoryPage from "../assets/images/banner-category-page.jpg";
 import categoryImage1 from "../assets/images/category-1.1.jpg";
 import ProductItem from "../components/common/ProductItem";
 import Feedback from "../components/common/Feedback";
 import ListStaff from "../components/common/ListStaff";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 import { Pagination } from "antd";
 
 const Category = () => {
@@ -84,6 +86,24 @@ const Category = () => {
     console.log(page);
     setCurrent(page);
   };
+  const { name } = useParams();
+  const [products, setProducts] = useState([]);
+
+  const [categoryId, setCategoryId] = useState(1);
+
+  useEffect(() => {
+    let fetchVariants = async () => {
+      const response = await axios.get(
+        "http://localhost:8000/api/v1/orders/variants/Sofa"
+      );
+
+      console.log("response", response);
+
+      setProducts(response.data);
+    };
+
+    fetchVariants();
+  }, []);
   return (
     <>
       <div className="banner">
@@ -102,7 +122,7 @@ const Category = () => {
           </div>
         </div>
         <div className="mt-10 grid grid-cols-2 gap-5">
-          {productsCate.map((product, index) => (
+          {products.map((product, index) => (
             <ProductItem key={index} product={product} />
           ))}
         </div>
