@@ -25,6 +25,7 @@ function App() {
               <Route index element={<Home />} />
               <Route path="product/:id" element={<ProductDetail />} />
               <Route path="category/:name" element={<Category />} />
+              <Route path="search/:keyword" element={<SearchResult />} />
               <Route path="cart" element={<Cart />} />
               <Route path="checkout" element={<Checkout />} />
               <Route path="wishlist" element={<Wishlist />} />
