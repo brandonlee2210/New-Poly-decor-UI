@@ -7,9 +7,11 @@ import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import categoryImage1 from "../assets/images/category-1.1.jpg";
 import rightProductDetail from "../assets/images/right-product-detail.jpg";
+import ProductComment from "../components/common/Comment";
 import ProductItem from "../components/common/ProductItem";
 import { getProductById } from "../api/api";
 import { Button, message } from "antd";
+import moment from "moment";
 
 const colors = [
   { name: "Màu nâu", id: "bg-brown-strong", value: "Nâu" },
@@ -204,6 +206,34 @@ const ProductDetail = () => {
           <img src={rightProductDetail} alt="right image" />
         </div>
       </div>
+      <ProductComment
+        comments={[
+          {
+            id: 1,
+            name: "User 1",
+            content: <p>Đây là sản phẩm rất tuyệt v��i</p>,
+            rating: 5,
+            createdAt: "2022-01-01",
+            author: "User Name",
+            avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+            datetime: moment().fromNow(),
+          },
+          {
+            id: 2,
+            name: "User 2",
+            content: "Sản phẩm thật là đ��p!",
+            rating: 4.5,
+            createdAt: "2022-01-02",
+          },
+          {
+            id: 3,
+            name: "User 3",
+            content: "Sản phẩm tuyệt v��i!",
+            rating: 5,
+            createdAt: "2022-01-03",
+          },
+        ]}
+      />
     </div>
   );
 };
