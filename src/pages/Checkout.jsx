@@ -17,6 +17,7 @@ const Checkout = () => {
   const [deliveryFee, setDeliveryFee] = useState("Chưa xác định");
   const [email, setEmail] = useState("");
   const [payment, setPayment] = useState("atHome");
+  const [dataAddress, setDataAddress] = useState({}); // state hứng dữ liệu từ InfoUserForm gửi lên
 
   const totalQuantity = carts.reduce(
     (total, product) => total + product.quantity,
@@ -93,6 +94,7 @@ const Checkout = () => {
     );
     setDistricts(data.data);
   };
+  console.log("districts", districts);
 
   const handleGetWards = async (e) => {
     setDistrict(e.target.value);
@@ -198,7 +200,11 @@ const Checkout = () => {
 
     // Your code here to submit the form
   };
-
+  const handleDataChange = (data) => {
+    console.log("data", data);
+    setDataAddress(data);
+  };
+  console.log("dataUser", dataAddress);
   return (
     <div className="mt-14 container2">
       <form
@@ -214,13 +220,15 @@ const Checkout = () => {
             Thông tin giao hàng
           </h2>
           <InfoUserForm
-            handleGetDistricts={handleGetDistricts}
-            provinces={provinces}
-            handleGetWards={handleGetWards}
-            districts={districts}
-            handleGetWardCode={handleGetWardCode}
-            wards={wards}
-            email={email}
+            // handleGetDistricts={handleGetDistricts}
+            // provinces={provinces}
+            // handleGetWards={handleGetWards}
+            // districts={districts}
+            // handleGetWardCode={handleGetWardCode}
+            // wards={wards}
+            // email={email}
+            type="checkout"
+            onDataChange={handleDataChange}
           />
         </div>
         <div>
