@@ -1,72 +1,86 @@
-// RegisterForm.js
-import React from "react";
-import { Form, Input, Button, Row, Col } from "antd";
+import React, { useContext, useState } from "react";
+import { LoginContext } from "../LoginContext";
 
-const RegisterForm = () => {
-  const onFinish = (values) => {
-    console.log("Received values:", values);
-    // Handle form submission logic here
+const LoginPage = () => {
+  const { isLoggedIn, login, logout } = useContext(LoginContext);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const response = await login(username, password);
   };
 
   return (
-    <Form
-      name="register-form"
-      onFinish={onFinish}
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
-      autoComplete="off"
-    >
-      <Form.Item
-        label="Username"
-        name="username"
-        rules={[{ required: true, message: "Please input your username!" }]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        label="Password"
-        name="password"
-        rules={[{ required: true, message: "Please input your password!" }]}
-      >
-        <Input.Password />
-      </Form.Item>
-
-      <Form.Item
-        label="Confirm Password"
-        name="confirmPassword"
-        dependencies={["password"]}
-        rules={[
-          { required: true, message: "Please confirm your password!" },
-          ({ getFieldValue }) => ({
-            validator(_, value) {
-              if (!value || getFieldValue("password") === value) {
-                return Promise.resolve();
-              }
-              return Promise.reject(
-                new Error("The two passwords do not match!")
-              );
-            },
-          }),
-        ]}
-      >
-        <Input.Password />
-      </Form.Item>
-
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Row gutter={8}>
-          <Col span={12}>
-            <Button type="primary" htmlType="submit" block>
-              Register
-            </Button>
-          </Col>
-          <Col span={12}>
-            <Button block>Cancel</Button>
-          </Col>
-        </Row>
-      </Form.Item>
-    </Form>
+    <section className="bg-gray ">
+      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <a
+          href="#"
+          className="flex items-center mb-6 text-2xl font-semibold text-gray-900"
+        >
+          Poly Decor
+        </a>
+        <div className="w-full bg-brown-light rounded-lg shadow  md:mt-0 sm:max-w-md xl:p-0  ">
+          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl ">
+              Đăng ký tài khoản mới
+            </h1>
+            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block mb-2 text-sm font-medium text-white "
+                >
+                  Tên đăng nhập
+                </label>
+                <input
+                  name="text"
+                  id="username"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dy-400"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Mật khẩu
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full text-white bg-brown-strong hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              >
+                Đăng nhập
+              </button>
+            </form>
+            {isLoggedIn && <p>You are logged in!</p>}
+            <p className="text-sm font-light text-gray-500">
+              Nếu bạn chưa có tài khoản thì{" "}
+              <a
+                href="/register"
+                className="font-medium text-primary-600 hover:underline"
+              >
+                đăng kí
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 
-export default RegisterForm;
+export default LoginPage;

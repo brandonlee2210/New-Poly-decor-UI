@@ -16,6 +16,7 @@ const Checkout = () => {
   const [ward, setWard] = useState("");
   const [deliveryFee, setDeliveryFee] = useState(35000);
   const [email, setEmail] = useState("");
+  const [payment, setPayment] = useState("atHome");
   const [dataAddress, setDataAddress] = useState({}); // state hứng dữ liệu từ InfoUserForm gửi lên
 
   const totalQuantity = carts.reduce(
@@ -146,46 +147,57 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (payment == "vnpay") {
+      // Your code here to submit the form
+      // Navigate to the payment page
+      let res = await axios.post(
+        "http://localhost:8000/api/v1/create_payment_url"
+      );
 
-    let address = `Tỉnh ${
-      provinces.find((x) => x.ProvinceID == province)?.ProvinceName
-    }, ${districts.find((x) => x.DistrictID == district)?.DistrictName}, ${
-      wards.find((x) => x.WardCode == ward)?.WardName
-    }`;
-    console.log("address", address);
+      if (res.data) {
+        window.location.href = res.data.data;
+      } else {
+        window.location.href = "/";
+      }
+    } else {
+      let address = `Tỉnh ${
+        provinces.find((x) => x.ProvinceID == province)?.ProvinceName
+      }, ${districts.find((x) => x.DistrictID == district)?.DistrictName}, ${
+        wards.find((x) => x.WardCode == ward)?.WardName
+      }`;
 
-    let orderDetailsData = carts.map((x) => {
-      return {
-        ...x,
-        variantID: x._id,
+      let orderDetailsData = carts.map((x) => {
+        return {
+          ...x,
+          variantID: x._id,
+        };
+      });
+
+      orderDetailsData.forEach((x) => {
+        delete x._id;
+      });
+
+      let orderDataSave = {
+        orderData: {
+          address: address,
+          total: totalPrice + deliveryFee,
+          userID: "60d5ec49f8d2c72b8c8e4b8b",
+        },
+        orderDetailsData,
       };
-    });
 
-    orderDetailsData.forEach((x) => {
-      delete x._id;
-    });
+      let res = await axios.post(
+        "http://localhost:8000/api/v1/orders/save-order",
+        orderDataSave
+      );
 
-    let orderDataSave = {
-      orderData: {
-        address: dataAddress,
-        total: totalPrice + deliveryFee,
-        userID: "60d5ec49f8d2c72b8c8e4b8b",
-      },
-      orderDetailsData,
-    };
-    console.log(orderDataSave);
+      let emailResutl = await sendEmail(address);
 
-    let res = await axios.post(
-      "http://localhost:8000/api/v1/orders/save-order",
-      orderDataSave
-    );
+      // console.log(res);
 
-    let emailResutl = await sendEmail(address);
-
-    // console.log(res);
-
-    if (emailResutl) {
-      navigate("/result-checkout");
+      if (emailResutl) {
+        navigate("/result-checkout");
+      }
     }
 
     // Your code here to submit the form
@@ -254,6 +266,8 @@ const Checkout = () => {
                   className="relative before:absolute before:top-[-2px] before:left-[-2px] before:w-4 before:h-4 before:rounded-full before:border-2 before:border-brown-light before:bg-white checked:before:bg-brown-light"
                   name="payment"
                   id="vnpay"
+                  checked={payment === "vnpay"}
+                  onChange={(e) => setPayment(e.target.id)}
                 />
                 <label htmlFor="vnpay" className="flex items-center gap-2">
                   Thanh toán qua ví VNPAY{" "}
@@ -267,6 +281,8 @@ const Checkout = () => {
                   className="relative before:absolute before:top-[-2px] before:left-[-2px] before:w-4 before:h-4 before:rounded-full before:border-2 before:border-brown-light before:bg-white checked:before:bg-brown-light"
                   name="payment"
                   id="atHome"
+                  checked={payment === "atHome"}
+                  onChange={(e) => setPayment(e.target.id)}
                 />
                 <label htmlFor="atHome">Thanh toán khi nhận hàng </label>
               </div>
