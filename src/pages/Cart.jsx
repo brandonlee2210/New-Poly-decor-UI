@@ -1,10 +1,17 @@
 import React, { useContext } from "react";
 import { CartContext } from "../CartContext";
+import { LoginContext } from "../LoginContext";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { message } from "antd";
 
 const Cart = () => {
   const { carts, removeCart, increaseQuantity, decreaseQuantity } =
     useContext(CartContext);
+
+  const { isLoggedIn } = useContext(LoginContext);
+
+  const navigate = useNavigate();
 
   const isCartEmpty = carts.length === 0;
   const totalQuantity = carts.reduce(
@@ -16,6 +23,17 @@ const Cart = () => {
     0
   );
   const finalPrice = totalPrice;
+
+  const handleCheckout = () => {
+    // Implement your checkout logic here
+    // Example: Redirect to payment gateway or show success message
+    if (!isLoggedIn) {
+      message.info("Vui lòng đăng nhập để tiến hành đặt hàng!");
+      return;
+    }
+
+    navigate("/checkout");
+  };
 
   return (
     <div className="container2 grid grid-cols-[3fr_1fr] gap-5 mt-16">
@@ -165,12 +183,12 @@ const Cart = () => {
               {finalPrice.toLocaleString()} ₫
             </span>
           </div>
-          <Link
-            to={"/checkout"}
+          <div
+            onClick={handleCheckout}
             className="block mt-5 text-center py-3 text-lg font-semibold uppercase rounded-lg bg-brown-light text-white border-2 border-brown-light duration-200 hover:text-brown-light hover:border-brown-light hover:bg-white"
           >
             Đặt hàng
-          </Link>
+          </div>
         </div>
       )}
     </div>

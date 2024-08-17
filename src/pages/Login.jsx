@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { LoginContext } from "../LoginContext";
+import { Button, message } from "antd";
 
 const LoginPage = () => {
   const { isLoggedIn, login, logout } = useContext(LoginContext);
@@ -29,7 +30,7 @@ const LoginPage = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-white "
+                  className="block mb-2 text-sm font-medium text-black "
                 >
                   Tên đăng nhập
                 </label>

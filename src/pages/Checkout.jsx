@@ -6,7 +6,7 @@ import { CartContext } from "../CartContext";
 import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
-  const { carts, addCart, removeCart } = useContext(CartContext);
+  const { carts, addCart, removeCart, removeAll } = useContext(CartContext);
   const navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -28,7 +28,7 @@ const Checkout = () => {
     0
   );
   console.log(totalPrice + deliveryFee);
-  
+
   const finalPrice = totalPrice;
 
   const formatCurrencyVND = (amount) => {
@@ -203,8 +203,8 @@ const Checkout = () => {
 
     // Your code here to submit the form
   };
-  console.log("Tổng giá trị", finalPrice+ deliveryFee);
-  
+  console.log("Tổng giá trị", finalPrice + deliveryFee);
+
   const handleDataChange = (data) => {
     setDataAddress(data);
   };
@@ -312,7 +312,7 @@ const Checkout = () => {
           <div className="flex items-center justify-between mt-4">
             <span>Thành tiền</span>
             <span className="font-semibold">
-              { ( finalPrice+ deliveryFee).toLocaleString()} ₫
+              {(finalPrice + deliveryFee).toLocaleString()} ₫
             </span>
           </div>
 

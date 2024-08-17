@@ -1,14 +1,23 @@
 import React, { useContext, useState } from "react";
 import { LoginContext } from "../LoginContext";
+import { Button, message } from "antd";
 
 const LoginPage = () => {
-  const { isLoggedIn, login, logout } = useContext(LoginContext);
+  const { isLoggedIn, login, logout, signup } = useContext(LoginContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const response = await login(username, password);
+
+    // check same password
+    if (password !== passwordConfirm) {
+      message.error(` Mật khẩu không khớp`);
+      return;
+    }
+
+    const response = await signup(username, password);
   };
 
   return (
@@ -29,7 +38,7 @@ const LoginPage = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-white "
+                  className="block mb-2 text-sm font-medium text-black "
                 >
                   Tên đăng nhập
                 </label>
@@ -57,6 +66,23 @@ const LoginPage = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Xác nhận mật khẩu
+                </label>
+                <input
+                  type="password"
+                  name="passwordConfirm"
+                  id="passwordConfirm"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                  required
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
                 />
               </div>
               <button

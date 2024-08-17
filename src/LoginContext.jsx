@@ -34,6 +34,7 @@ export const LoginProvider = ({ children }) => {
         window.location.href = "/";
       }, 1000);
     } catch (err) {
+      message.error("Tài khoản hoặc mật khẩu không đúng");
       console.error("Error logging in", err);
     }
   };
@@ -46,8 +47,10 @@ export const LoginProvider = ({ children }) => {
         password_confirmation: password,
       });
 
-      message.success("Đăng nhập thành công");
-      setIsLoggedIn(true);
+      message.success("Đăng kí tài khoản thành công");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
     } catch (err) {
       console.error("Error signing up", err);
       message.error("Error signing up. Please try again.");
@@ -56,10 +59,16 @@ export const LoginProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("id");
     setIsLoggedIn(false);
+    message.success("Đăng xuất thành công");
+
+    // navigate to login page
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 1000);
   };
 
   return (
-    <LoginContext.Provider value={{ isLoggedIn, login, logout }}>
+    <LoginContext.Provider value={{ isLoggedIn, login, logout, signup }}>
       {children}
     </LoginContext.Provider>
   );

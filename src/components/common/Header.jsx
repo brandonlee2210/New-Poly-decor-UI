@@ -7,17 +7,6 @@ import { LoginContext } from "../../LoginContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const loggedItems = [
-  {
-    key: "1",
-    label: <Link to={"/update-info"}>Cập nhật tài khoản</Link>,
-  },
-  {
-    key: "2",
-    label: <Link to={"/"}>Đăng xuất</Link>,
-  },
-];
-
 const loginItems = [
   {
     key: "1",
@@ -40,6 +29,21 @@ const Header = () => {
   const navigate = useNavigate();
 
   const [keyword, setKeyword] = useState("");
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  const loggedItems = [
+    {
+      key: "1",
+      label: <Link to={"/update-info"}>Cập nhật tài khoản</Link>,
+    },
+    {
+      key: "2",
+      label: <span onClick={handleLogout}>Đăng xuất</span>,
+    },
+  ];
 
   const handleSearch = (e) => {
     e.preventDefault();

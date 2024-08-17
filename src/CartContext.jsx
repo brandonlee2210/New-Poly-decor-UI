@@ -31,6 +31,11 @@ const CartProvider = ({ children }) => {
     );
   };
 
+  const removeAll = () => {
+    setCarts([]);
+    localStorage.removeItem("carts");
+  };
+
   const removeWhistlist = (productId) => {
     const updatedWhistlists = whistlists.filter(
       (product) => product._id !== productId
@@ -101,6 +106,7 @@ const CartProvider = ({ children }) => {
         removeWhistlist,
         increaseQuantity,
         decreaseQuantity,
+        removeAll,
       }}
     >
       {children}
