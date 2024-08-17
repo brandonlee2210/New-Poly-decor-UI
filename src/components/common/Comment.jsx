@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar, Form, Button, List, Input } from "antd";
 import { Comment } from "@ant-design/compatible";
+import { getProductById, getCommentByProductId } from "../../api/api";
 import moment from "moment";
 
 const { TextArea } = Input;
@@ -34,39 +35,50 @@ const Editor = ({ onChange, onSubmit, submitting, value }) => (
   </>
 );
 
-const ProductComment = () => {
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      name: "User 1",
-      content: <p>Đây là sản phẩm rất tuyệt v��i</p>,
-      rating: 5,
-      createdAt: "2022-01-01",
-      author: "Gia Khánh",
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-      datetime: moment().fromNow(),
-    },
-    {
-      id: 1,
-      name: "User 1",
-      content: <p>Đây là sản phẩm rất tuyệt v��i</p>,
-      rating: 5,
-      createdAt: "2022-01-01",
-      author: "Gia Bảo",
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-      datetime: moment().fromNow(),
-    },
-    {
-      id: 1,
-      name: "User 1",
-      content: <p>Sản phẩm như loz què</p>,
-      rating: 5,
-      createdAt: "2022-01-01",
-      author: "Trần Vỹ",
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-      datetime: moment().fromNow(),
-    },
-  ]);
+const commentFake = [
+  {
+    id: 1,
+    name: "User 1",
+    content: <p>Đây là sản phẩm rất tuyệt v��i</p>,
+    rating: 5,
+    createdAt: "2022-01-01",
+    author: "Gia Khánh",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    datetime: moment().fromNow(),
+  },
+  {
+    id: 1,
+    name: "User 1",
+    content: <p>Đây là sản phẩm rất tuyệt v��i</p>,
+    rating: 5,
+    createdAt: "2022-01-01",
+    author: "Gia Bảo",
+    avatar: "https://randomuser.me/api/portraits/men/40.jpg",
+    datetime: moment().fromNow(),
+  },
+  {
+    id: 1,
+    name: "User 1",
+    content: <p>Sản phẩm rất đẹp nhưng giá có vẻ hơi chát</p>,
+    rating: 5,
+    createdAt: "2022-01-01",
+    author: "Trần Vỹ",
+    avatar: "https://randomuser.me/api/portraits/women/35.jpg",
+    datetime: moment().fromNow(),
+  },
+];
+
+const ProductComment = ({ id }) => {
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const comments = await getCommentByProductId(id);
+      setComments(commentFake);
+    };
+    fetchData();
+  }, [id]);
+
   const [submitting, setSubmitting] = useState(false);
   const [value, setValue] = useState("");
 

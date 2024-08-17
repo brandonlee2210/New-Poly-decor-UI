@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Dropdown } from "antd";
 import { CartContext } from "../../CartContext";
 import { LoginContext } from "../../LoginContext";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const loggedItems = [
@@ -35,6 +36,20 @@ const Header = () => {
   const { carts, addCart, removeCart, whistlists } = useContext(CartContext);
 
   const { isLoggedIn, login, logout } = useContext(LoginContext);
+
+  const navigate = useNavigate();
+
+  const [keyword, setKeyword] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // navigate to router <Route path="search/:keyword" element={<SearchResult />} />
+    if (!keyword) {
+      navigate(`/search/empty`);
+      return;
+    }
+    navigate(`/search/${keyword}`);
+  };
 
   console.log("isLoggedIn", isLoggedIn);
 
@@ -68,8 +83,13 @@ const Header = () => {
                 className="bg-[#C79F61] py-2 px-8 outline-none rounded-xl placeholder:text-brown-strong placeholder:text-sm w-full"
                 type="text"
                 placeholder="Nhập để tìm kiếm sản phẩm bạn muốn"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
               />
-              <button className="absolute top-[50%] left-2 translate-y-[-50%] text-brown-strong text-xl">
+              <button
+                className="absolute top-[50%] left-2 translate-y-[-50%] text-brown-strong text-xl"
+                onClick={handleSearch}
+              >
                 <i className="fa-solid fa-magnifying-glass"></i>
               </button>
             </form>

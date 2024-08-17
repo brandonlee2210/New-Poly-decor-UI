@@ -1,314 +1,362 @@
+import { Form, Input, Select, Button, message } from "antd";
 import axios from "axios";
-import React, { useEffect, useState, useContext } from "react";
-import vnpay from "../assets/images/VNPAY.webp";
-import InfoUserForm from "../components/common/InfoUserForm";
-import { CartContext } from "../CartContext";
-import { useNavigate } from "react-router-dom";
 
-const Checkout = () => {
-  const { carts, addCart, removeCart } = useContext(CartContext);
-  const navigate = useNavigate();
+import React, { useEffect, useState } from "react";
+
+const { Option } = Select;
+
+const InfoUserForm = (props) => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
-  const [deliveryFee, setDeliveryFee] = useState("Chưa xác định");
-  const [email, setEmail] = useState("");
-  const [dataAddress, setDataAddress] = useState({}); // state hứng dữ liệu từ InfoUserForm gửi lên
+  const [street, setStreet] = useState("");
+  const id = localStorage.getItem("id");
 
-  const totalQuantity = carts.reduce(
-    (total, product) => total + product.quantity,
-    0
-  );
-  const totalPrice = carts.reduce(
-    (total, product) => total + product.price * product.quantity,
-    0
-  );
-  const finalPrice = totalPrice;
-
-  const formatCurrencyVND = (amount) => {
-    let formattedAmount = amount
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    return `${formattedAmount} ₫`;
-  };
-
-  const caculateDeliveryFee = async () => {
-    try {
-      const { data } = await axios.post(
-        "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee",
-        {
-          service_id: 53321,
-          insurance_value: 100000,
-          coupon: null,
-          from_district_id: 1482,
-          to_district_id: parseInt(district),
-          to_ward_code: ward,
-          height: 10,
-          length: 10,
-          weight: 1000,
-          width: 10,
-        },
-        {
-          headers: {
-            token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
-          },
-        }
-      );
-
-      setDeliveryFee(data.data.total);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    const getProvinces = async () => {
-      const { data } = await axios.get(
-        "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
-        {
-          headers: {
-            token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
-          },
-        }
-      );
-      setProvinces(data.data);
-    };
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8000/api/v1/auth/${id}`);
+        const user = res.data.user;
+        const namePro = provinces.find(
+          (x) => x.ProvinceID == province
+        )?.ProvinceName;
+        const nameDis = districts.find(
+          (f) => f.DistrictID == district
+        )?.DistrictName;
+        form.setFieldsValue({
+          fullName: user.fullName,
+          phoneNumber: user.phoneNumber,
+          email: user.email,
+          province: namePro || user.province,
+          district: nameDis || user.district,
+          ward: user.ward,
+          street: user.street,
+        });
 
+        setProvince(user.province);
+        setDistrict(user.district);
+        setWard(user.ward);
+
+        setStreet(user.street);
+      } catch (error) {
+        console.log("Failed to fetch data:", error);
+      }
+    };
+    fetchData();
+  }, [form, id, provinces, districts, wards, province, district, ward]);
+  console.log(province);
+
+  // Fetch provinces
+  useEffect(() => {
+    const getProvinces = async () => {
+      try {
+        const { data } = await axios.get(
+          "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
+          {
+            headers: {
+              token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
+            },
+          }
+        );
+        setProvinces(data.data);
+      } catch (error) {
+        console.error("Failed to fetch provinces:", error);
+      }
+    };
     getProvinces();
   }, []);
 
-  const handleGetDistricts = async (e) => {
-    setProvince(e.target.value);
-    const { data } = await axios.get(
-      "https://online-gateway.ghn.vn/shiip/public-api/master-data/district",
-      {
-        params: { province_id: e.target.value },
-        headers: {
-          token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
-        },
+  useEffect(() => {
+    const getDistricts = async () => {
+      if (province) {
+        try {
+          const { data } = await axios.get(
+            "https://online-gateway.ghn.vn/shiip/public-api/master-data/district",
+            {
+              params: { province_id: province },
+              headers: {
+                token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
+              },
+            }
+          );
+          setDistricts(data.data);
+        } catch (error) {
+          console.error("Failed to fetch districts:", error);
+        }
       }
-    );
-    setDistricts(data.data);
-  };
-  console.log("districts", districts);
-
-  const handleGetWards = async (e) => {
-    setDistrict(e.target.value);
-    const { data } = await axios.get(
-      "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward",
-      {
-        params: { district_id: e.target.value },
-        headers: {
-          token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
-        },
-      }
-    );
-    setWards(data.data);
-  };
-
-  const handleGetWardCode = (e) => {
-    setWard(e.target.value);
-  };
-
-  const sendEmail = async (address) => {
-    // use axios
-    try {
-      const res = await axios.post("http://localhost:8000/api/v1/send-email", {
-        // your data
-        total: totalPrice,
-        address,
-        status: 1,
-        date: new Date(),
-      });
-      console.log("res", res);
-
-      if (res) {
-        return true;
-      } else {
-        return false;
-      }
-      // navigate("/thank-you");
-    } catch (error) {
-      return false;
-    }
-  };
+    };
+    getDistricts();
+  }, [province]);
 
   useEffect(() => {
-    if (ward) {
-      caculateDeliveryFee();
-    }
-  }, [ward]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    let address = `Tỉnh ${
-      provinces.find((x) => x.ProvinceID == province)?.ProvinceName
-    }, ${districts.find((x) => x.DistrictID == district)?.DistrictName}, ${
-      wards.find((x) => x.WardCode == ward)?.WardName
-    }`;
-    console.log("address", address);
-
-    let orderDetailsData = carts.map((x) => {
-      return {
-        ...x,
-        variantID: x._id,
-      };
-    });
-
-    orderDetailsData.forEach((x) => {
-      delete x._id;
-    });
-
-    let orderDataSave = {
-      orderData: {
-        address: dataAddress,
-        total: totalPrice + deliveryFee,
-        userID: "60d5ec49f8d2c72b8c8e4b8b",
-      },
-      orderDetailsData,
+    const getWards = async () => {
+      if (district) {
+        try {
+          const { data } = await axios.get(
+            "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward",
+            {
+              params: { district_id: district },
+              headers: {
+                token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
+              },
+            }
+          );
+          setWards(data.data);
+        } catch (error) {
+          console.error("Failed to fetch wards:", error);
+        }
+      }
     };
-    console.log(orderDataSave);
+    getWards();
+  }, [district]);
 
-    let res = await axios.post(
-      "http://localhost:8000/api/v1/orders/save-order",
-      orderDataSave
+  useEffect(() => {
+    if (typeof props.onDataChange === "function") {
+      if (province && district && ward) {
+        let address =
+          `Tỉnh ${province}, ${district}, ${ward}, ${street}` ||
+          `Tỉnh ${
+            provinces.find((x) => x.ProvinceID == province)?.ProvinceName
+          }, ${
+            districts.find((x) => x.DistrictID == district)?.DistrictName
+          }, ${wards.find((x) => x.WardCode == ward)?.WardName},${street}`;
+        console.log("address", address);
+
+        props.onDataChange(address);
+      }
+    }
+  }, [province, district, ward, props, provinces, districts, wards]);
+
+  const handleGetDistricts = async (provinceId) => {
+    setProvince(provinceId);
+    setDistrict(""); // Reset district and ward when province changes
+    setWard("");
+    if (provinceId) {
+      try {
+        const { data } = await axios.get(
+          "https://online-gateway.ghn.vn/shiip/public-api/master-data/district",
+          {
+            params: { province_id: provinceId },
+            headers: {
+              token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
+            },
+          }
+        );
+        console.log(data.data);
+
+        setDistricts(data.data);
+      } catch (error) {
+        console.error("Failed to fetch districts:", error);
+      }
+    }
+  };
+
+  const handleGetWards = async (districtId) => {
+    setDistrict(districtId);
+    setWard("");
+
+    if (districtId) {
+      try {
+        const { data } = await axios.get(
+          "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward",
+          {
+            params: { district_id: districtId },
+            headers: {
+              token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
+            },
+          }
+        );
+        setWards(data.data);
+      } catch (error) {
+        console.error("Failed to fetch wards:", error);
+      }
+    }
+  };
+
+  const handleSubmit = async (values) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:8000/api/v1/auth/${id}`,
+        values
+      );
+      console.log("Updated user:", res.data);
+
+      if (res.status === 200) {
+        message.success("Cập nhật thông tin thành công");
+        if (typeof props.onDataChange === "function") {
+          props.onDataChange(values);
+        }
+      }
+    } catch (error) {
+      console.log("Failed to submit the form:", error);
+      message.error("Cập nhật thông tin thất bại");
+    }
+  };
+
+  const display = props.type === "checkout" ? "none" : "flex";
+  const backgroud = props.type === "checkout" ? "bg-[#FFF]" : "bg-[#DDB671]";
+  const minHeight = props.type === "checkout" ? "" : "min-h-[750px]";
+
+  const tittle =
+    props.type === "checkout" ? (
+      ""
+    ) : (
+      <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 my-4 md:text-2xl ">
+        Cập nhật thông tin người dùng
+      </h1>
     );
 
-    let emailResutl = await sendEmail(address);
+  const btnConfirm =
+    props.type === "checkout" ? (
+      ""
+    ) : (
+      <div className="mt-6 text-center">
+        <Button
+          type="primary"
+          htmlType="submit"
+          className="bg-brown-strong text-white px-8 py-4 font-bold rounded-lg shadow-md hover:bg-brown-dark transition-colors duration-300"
+        >
+          Xác nhận
+        </Button>
+      </div>
+    );
 
-    // console.log(res);
-
-    if (emailResutl) {
-      navigate("/result-checkout");
-    }
-
-    // Your code here to submit the form
-  };
-  const handleDataChange = (data) => {
-    console.log("data", data);
-    setDataAddress(data);
-  };
-  console.log("dataUser", dataAddress);
   return (
-    <div className="mt-14 container2">
-      <form
-        action=""
-        className="grid grid-cols-[6fr_6fr_4fr] gap-5"
-        onSubmit={handleSubmit}
+    <div className={`${minHeight} ${display} items-center justify-center`}>
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+        className={`max-w-3xl w-full ${backgroud} p-10 rounded-lg shadow-lg border border-gray-300`}
+        style={{ backgroundImage: "url('/path-to-your-furniture-bg.jpg')" }}
       >
-        <div>
-          <h2
-            className="text-2xl font-semibold text-brown-strong mb-3"
-            onClick={sendEmail}
+        {tittle}
+
+        <div className="grid grid-cols-2 gap-4">
+          <Form.Item
+            name="fullName"
+            rules={[{ required: true, message: "Vui lòng nhập họ tên." }]}
           >
-            Thông tin giao hàng
-          </h2>
-          <InfoUserForm
-            // handleGetDistricts={handleGetDistricts}
-            // provinces={provinces}
-            // handleGetWards={handleGetWards}
-            // districts={districts}
-            // handleGetWardCode={handleGetWardCode}
-            // wards={wards}
-            // email={email}
-            type="checkout"
-            onDataChange={handleDataChange}
-          />
-        </div>
-        <div>
-          <div>
-            <h2 className="text-2xl font-semibold text-brown-strong mb-3">
-              Đơn vị vận chuyển
-            </h2>
-            <div className="flex items-center gap-2 border border-brown-light rounded-lg p-5">
-              <input
-                type="radio"
-                className="relative before:absolute before:top-[-2px] before:left-[-2px] before:w-4 before:h-4 before:rounded-full before:border-2 before:border-brown-light before:bg-white checked:before:bg-brown-light"
-                checked
-                name=""
-                id="delivery"
-              />
-              <label htmlFor="delivery">Giao hàng nhanh</label>
-            </div>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold text-brown-strong mb-3 mt-5">
-              Phương thức thanh toán
-            </h2>
-            <div className=" border border-brown-light rounded-lg px-5 py-3">
-              <div className="text-sm text-gray-600">
-                Mọi giao dịch đều được bảo mật và mã hóa. Thông tin thẻ tín dụng
-                sẽ không bao giờ được lưu lại.
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                <input
-                  type="radio"
-                  className="relative before:absolute before:top-[-2px] before:left-[-2px] before:w-4 before:h-4 before:rounded-full before:border-2 before:border-brown-light before:bg-white checked:before:bg-brown-light"
-                  name="payment"
-                  id="vnpay"
-                />
-                <label htmlFor="vnpay" className="flex items-center gap-2">
-                  Thanh toán qua ví VNPAY{" "}
-                  <img src={vnpay} alt="vnpay" width={80} />
-                </label>
-              </div>
-
-              <div className="flex items-center gap-2 mt-2">
-                <input
-                  type="radio"
-                  className="relative before:absolute before:top-[-2px] before:left-[-2px] before:w-4 before:h-4 before:rounded-full before:border-2 before:border-brown-light before:bg-white checked:before:bg-brown-light"
-                  name="payment"
-                  id="atHome"
-                />
-                <label htmlFor="atHome">Thanh toán khi nhận hàng </label>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="text-brown-strong">
-          <h2 className="text-2xl font-bold ">Tổng tiền giỏ hàng</h2>
-          <div className="flex items-center justify-between mt-4">
-            <span>Tổng sản phẩm</span>
-            <span>{totalQuantity}</span>
-          </div>
-
-          <div className="flex items-center justify-between mt-4">
-            <span>Tổng tiền hàng</span>
-            <span className="font-semibold">
-              {finalPrice.toLocaleString()} ₫
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between mt-4">
-            <span>Phí vận chuyển</span>
-            <span className="font-semibold">
-              {deliveryFee.toLocaleString()}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between mt-4">
-            <span>Thành tiền</span>
-            <span className="font-semibold">
-              {ward
-                ? (finalPrice + deliveryFee).toLocaleString()
-                : "Chưa xác định"}
-            </span>
-          </div>
-
-          <button
-            type="submit"
-            className="block w-full mt-5 text-center py-3 text-lg font-semibold uppercase rounded-lg bg-brown-light text-white border-2 border-brown-light duration-200 hover:text-brown-light hover:border-brown-light hover:bg-white"
+            <Input
+              type="text"
+              name="fullName"
+              placeholder="Họ tên"
+              className="outline-none border border-gray-300 rounded-lg px-4 py-3 w-full placeholder:text-gray-600 text-gray-800 focus:ring-2 focus:ring-brown-strong bg-opacity-75 shadow-sm transition-all duration-300"
+            />
+          </Form.Item>
+          <Form.Item
+            name="phoneNumber"
+            rules={[
+              { required: true, message: "Vui lòng nhập số điện thoại." },
+              { pattern: /^\d{10}$/, message: "Số điện thoại không hợp lệ." },
+            ]}
           >
-            Đặt hàng
-          </button>
+            <Input
+              type="text"
+              name="phoneNumber"
+              placeholder="Số điện thoại"
+              className="outline-none border border-gray-300 rounded-lg px-4 py-3 w-full placeholder:text-gray-600 text-gray-800 focus:ring-2 focus:ring-brown-strong bg-opacity-75 shadow-sm transition-all duration-300"
+            />
+          </Form.Item>
         </div>
-      </form>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Form.Item
+            name="province"
+            rules={[
+              { required: true, message: "Vui lòng chọn Tỉnh/Thành phố." },
+            ]}
+          >
+            <Select
+              onChange={handleGetDistricts}
+              placeholder="Tỉnh/Thành phố"
+              className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-strong"
+              style={{ height: "48px" }}
+            >
+              {provinces.map((prov) => (
+                <Option key={prov.ProvinceID} value={prov.ProvinceID}>
+                  {prov.ProvinceName}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="district"
+            rules={[{ required: true, message: "Vui lòng chọn Quận/Huyện." }]}
+          >
+            <Select
+              onChange={handleGetWards}
+              placeholder="Quận/Huyện"
+              className="w-full border border-gray-300 rounded-lg  focus:ring-2 focus:ring-brown-strong"
+              disabled={!province}
+              style={{ height: "48px" }}
+            >
+              {districts.map((dist) => (
+                <Option key={dist.DistrictID} value={dist.DistrictID}>
+                  {dist.DistrictName}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Form.Item
+            name="ward"
+            rules={[{ required: true, message: "Vui lòng chọn Phường/Xã." }]}
+          >
+            <Select
+              onChange={(value) => setWard(value)}
+              placeholder="Phường/Xã"
+              className="w-full border border-gray-300 rounded-lg  focus:ring-2 focus:ring-brown-strong"
+              disabled={!district}
+              style={{ height: "48px" }}
+            >
+              {wards.map((ward) => (
+                <Option key={ward.WardCode} value={ward.WardCode}>
+                  {ward.WardName}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="street"
+            rules={[{ required: true, message: "Vui lòng nhập tên đường." }]}
+          >
+            <Input
+              type="text"
+              name="street"
+              placeholder="Tên đường"
+              className="outline-none border border-gray-300 rounded-lg px-4 py-3 w-full placeholder:text-gray-600 text-gray-800 focus:ring-2 focus:ring-brown-strong bg-opacity-75 shadow-sm transition-all duration-300"
+            />
+          </Form.Item>
+        </div>
+
+        <div className="grid grid-cols-1">
+          <Form.Item
+            name="email"
+            rules={[
+              { required: true, message: "Vui lòng nhập email." },
+              { type: "email", message: "Email không hợp lệ." },
+            ]}
+          >
+            <Input
+              type="email"
+              name="email"
+              placeholder="Email"
+              className="outline-none border border-gray-300 rounded-lg px-4 py-3 w-full placeholder:text-gray-600 text-gray-800 focus:ring-2 focus:ring-brown-strong bg-opacity-75 shadow-sm transition-all duration-300"
+            />
+          </Form.Item>
+        </div>
+
+        {btnConfirm}
+      </Form>
     </div>
   );
 };
 
-export default Checkout;
+export default InfoUserForm;

@@ -4,8 +4,8 @@ import categoryImage1 from "../assets/images/category-1.1.jpg";
 import ProductItem from "../components/common/ProductItem";
 import Feedback from "../components/common/Feedback";
 import ListStaff from "../components/common/ListStaff";
-import axios from "axios";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import { Pagination } from "antd";
 
 const Category = () => {
@@ -94,7 +94,7 @@ const Category = () => {
   useEffect(() => {
     let fetchVariants = async () => {
       const response = await axios.get(
-        "http://localhost:8000/api/v1/orders/variants/Sofa"
+        "http://localhost:8000/api/v1/orders/variants/" + name
       );
 
       console.log("response", response);
@@ -103,7 +103,7 @@ const Category = () => {
     };
 
     fetchVariants();
-  }, []);
+  }, [name]);
   return (
     <>
       <div className="banner">
@@ -127,7 +127,7 @@ const Category = () => {
           ))}
         </div>
         <div className="flex items-center justify-center mt-10">
-          <Pagination current={current} onChange={onChange} total={50} />
+          <Pagination current={current} onChange={onChange} total={5} />
         </div>
         <Feedback />
         <ListStaff />

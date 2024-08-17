@@ -3,37 +3,58 @@ import ProductItem from "../components/common/ProductItem";
 import axios from "axios";
 import { Pagination, Slider, Select, Button } from "antd";
 import { formatCurrency } from "../utils";
-import { getProducts } from "../api/api";
+import { getProductsFiltered } from "../api/api";
+import { useParams } from "react-router-dom";
 
 const { Option } = Select;
 
 const SearchResult = () => {
-  const [current, setCurrent] = useState(3);
+  const { keyword } = useParams();
+  const [current, setCurrent] = useState(1);
   const [products, setProducts] = useState([]);
+  const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState({
     color: null,
     material: null,
-    priceRange: [0, 100000000],
+    price: [0, 10000000],
+    limit: 4,
+    page: 1,
   });
 
   const onChangePage = (page) => {
-    console.log(page);
     setCurrent(page);
+    setFilters((prev) => ({ ...prev, page }));
+    let keywordFilter = keyword == "empty" ? "" : keyword;
+    getProductsFiltered({
+      ...filters,
+      keyword: keywordFilter,
+    }).then((res) => {
+      setProducts(res.data);
+    });
   };
 
   const handleFilterChange = (field, value) => {
+    console.log(field, value);
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleFilterSubmit = () => {
-    console.log("Selected filters:", filters);
+    let keywordFilter = keyword == "empty" ? "" : keyword;
+    getProductsFiltered({ ...filters, keyword: keywordFilter }).then((res) => {
+      console.log(res);
+      setProducts(res.data);
+      setTotal(res.total);
+    });
   };
 
   useEffect(() => {
-    getProducts().then((data) => {
-      setProducts(data.data);
+    let keywordFilter = keyword == "empty" ? "" : keyword;
+    getProductsFiltered({ ...filters, keyword: keywordFilter }).then((res) => {
+      console.log(res);
+      setProducts(res.data);
+      setTotal(res.total);
     });
-  }, []);
+  }, [keyword]);
 
   return (
     <div className="container2 mt-16">
@@ -45,6 +66,7 @@ const SearchResult = () => {
               className="w-full"
               placeholder="Chọn màu sắc"
               onChange={(value) => handleFilterChange("color", value)}
+              allowClear={true}
             >
               <Option value="color1">Nâu lạnh</Option>
               <Option value="color2">Nâu nhạt</Option>
@@ -61,6 +83,7 @@ const SearchResult = () => {
               className="w-full"
               placeholder="Chọn chất liệu"
               onChange={(value) => handleFilterChange("material", value)}
+              allowClear={true}
             >
               <Option value="material1">Gỗ sồi</Option>
               <Option value="material2">Gỗ thông</Option>
@@ -76,14 +99,14 @@ const SearchResult = () => {
             <Slider
               range
               min={0}
-              max={100000000}
-              defaultValue={filters.priceRange}
-              onChange={(value) => handleFilterChange("priceRange", value)}
+              max={10000000}
+              defaultValue={filters.price}
+              onChange={(value) => handleFilterChange("price", value)}
               tipFormatter={null}
             />
             <div className="flex justify-between text-brown-strong">
-              <span>{formatCurrency(filters.priceRange[0])}</span>
-              <span>{formatCurrency(filters.priceRange[1])}</span>
+              <span>{formatCurrency(filters.price[0])}</span>
+              <span>{formatCurrency(filters.price[1])}</span>
             </div>
           </div>
           <Button type="primary" onClick={handleFilterSubmit}>
@@ -97,7 +120,12 @@ const SearchResult = () => {
             ))}
           </div>
           <div className="flex items-center justify-center mt-5">
-            <Pagination current={current} onChange={onChangePage} total={50} />
+            <Pagination
+              current={current}
+              onChange={onChangePage}
+              pageSize={filters.limit}
+              total={total}
+            />
           </div>
         </div>
       </div>

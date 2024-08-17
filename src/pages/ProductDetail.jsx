@@ -9,7 +9,7 @@ import categoryImage1 from "../assets/images/category-1.1.jpg";
 import rightProductDetail from "../assets/images/right-product-detail.jpg";
 import ProductComment from "../components/common/Comment";
 import ProductItem from "../components/common/ProductItem";
-import { getProductById } from "../api/api";
+import { getProductById, getCommentByProductId } from "../api/api";
 import { Button, message } from "antd";
 import moment from "moment";
 
@@ -37,6 +37,13 @@ const ProductDetail = () => {
       setProduct(res);
       setVariants(res.variants);
       setVariant(res.variants[0]);
+    });
+  }, [id]);
+
+  // get comments from product id
+  useEffect(() => {
+    getCommentByProductId(id).then((res) => {
+      console.log("Comments: ", res);
     });
   }, [id]);
 
@@ -106,8 +113,9 @@ const ProductDetail = () => {
       <div className="flex justify-between gap-[30px]">
         <div>
           <img
-            src={`/src/assets/images/${product.image}`}
+            src={`${product.image}`}
             alt="product image"
+            style={{ width: 900 }}
           />
           <h2 className="text-3xl font-bold text-brown-strong mt-5">
             {product.name}
@@ -126,7 +134,7 @@ const ProductDetail = () => {
             </div>
             |<div className="text-gray-500">1000 lượt mua</div>
           </div>
-          <div className="mt-3 text-lg text-brown-light font-semibold">
+          <div className="mt-3 mr-3 text-lg text-brown-light font-semibold">
             Số lượng: {variant?.quantity}
           </div>
           <div className="mt-3 text-lg text-brown-light line-through font-semibold">
@@ -173,10 +181,10 @@ const ProductDetail = () => {
               </select>
             </div>
           )}
-          <div className="mt-5">
+          <div className="mt-5 ">
             <label
               htmlFor="quantity"
-              className="text-lg font-semibold text-brown-strong"
+              className="text-lg mr-2 font-semibold text-brown-strong"
             >
               Số lượng
             </label>
@@ -206,34 +214,7 @@ const ProductDetail = () => {
           <img src={rightProductDetail} alt="right image" />
         </div>
       </div>
-      <ProductComment
-        comments={[
-          {
-            id: 1,
-            name: "User 1",
-            content: <p>Đây là sản phẩm rất tuyệt v��i</p>,
-            rating: 5,
-            createdAt: "2022-01-01",
-            author: "User Name",
-            avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-            datetime: moment().fromNow(),
-          },
-          {
-            id: 2,
-            name: "User 2",
-            content: "Sản phẩm thật là đ��p!",
-            rating: 4.5,
-            createdAt: "2022-01-02",
-          },
-          {
-            id: 3,
-            name: "User 3",
-            content: "Sản phẩm tuyệt v��i!",
-            rating: 5,
-            createdAt: "2022-01-03",
-          },
-        ]}
-      />
+      <ProductComment id={id} />
     </div>
   );
 };

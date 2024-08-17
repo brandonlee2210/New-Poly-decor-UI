@@ -12,6 +12,19 @@ export const getCategories = async () => {
   }
 };
 
+export const getCommentByProductId = async (id) => {
+  try {
+    const response = await axios.get(
+      "http://localhost:8000/api/v1/comments/byproduct/" + id
+    );
+    console.log("response", response);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
 export const addNewCategory = async (data) => {
   try {
     const response = await axios.post(
@@ -76,6 +89,22 @@ export const getProducts = async () => {
     console.log(error);
   }
 };
+
+export const getProductsFiltered = async (filter) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:8000/api/v1/variants/filtered",
+      filter
+    );
+    console.log("response", response);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+  // You may want to handle the error differently depending on your application's requirements
+};
+
 export const getProductById = async (id) => {
   try {
     const response = await axios.get(
