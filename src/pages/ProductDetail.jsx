@@ -115,7 +115,7 @@ const ProductDetail = () => {
     let cartData = {
       ...product,
       material,
-      color: colors.find((c) => c.id === activeColor).value,
+      color: activeColor,
       price: variant.price,
       quantity, // Thêm số lượng vào dữ liệu giỏ hàng
     };
