@@ -119,11 +119,11 @@ const InfoUserForm = (props) => {
     if (typeof props.onDataChange === "function") {
 
       if (province && district && ward) {
-        let address = `Tỉnh ${province}, ${district}, ${ward}, ${street}` ||`Tỉnh ${
+        let address =`Tỉnh ${
           provinces.find((x) => x.ProvinceID == province)?.ProvinceName
         }, ${districts.find((x) => x.DistrictID == district)?.DistrictName}, ${
           wards.find((x) => x.WardCode == ward)?.WardName
-        },${street}` 
+        },${street}` || `Tỉnh ${province}, ${district}, ${ward}, ${street}` 
         console.log("address", address);
         
         props.onDataChange(address);
