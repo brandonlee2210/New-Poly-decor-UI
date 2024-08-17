@@ -26,7 +26,7 @@ const ProductItem = (props) => {
       <div className="overflow-hidden">
         <Link to={`/product/${props.product._id}`}>
           <img
-            src={`src/assets/images/${props.product.image}`}
+            src={`${props.product.image}`}
             alt="product image"
             className="hover:scale-110 duration-500"
           />
