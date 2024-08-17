@@ -14,6 +14,7 @@ import HistoryDetail from "./pages/HistoryDetail";
 import ResultCheckout from "./pages/ResultCheckout";
 import { CartProvider } from "./CartContext.jsx";
 import { LoginProvider } from "./LoginContext.jsx";
+import InfoUserForm from "./components/common/InfoUserForm.jsx";
 
 function App() {
   return (
@@ -29,7 +30,7 @@ function App() {
               <Route path="checkout" element={<Checkout />} />
               <Route path="wishlist" element={<Wishlist />} />
               <Route path="result-checkout" element={<ResultCheckout />} />
-              <Route path="update-info" element={<UpdateInfo />} />
+              <Route path="update-info" element={<InfoUserForm />} />
               <Route path="history" element={<History />} />
               <Route path="history/:id" element={<HistoryDetail />} />
             </Route>
