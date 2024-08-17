@@ -12,6 +12,11 @@ const CartProvider = ({ children }) => {
     setCarts(storedCarts);
   }, []);
 
+  useEffect(() => {
+    const whistlists = JSON.parse(localStorage.getItem("whistlists")) || [];
+    setWhistlists(whistlists);
+  }, []);
+
   const addWhistlist = (newProduct) => {
     const existingWhistlist = whistlists.find(
       (product) => product._id === newProduct._id
@@ -41,7 +46,6 @@ const CartProvider = ({ children }) => {
         cart.material === newCart.material
     );
 
-    console.log(newCart.quantity, "quantity");
     if (existingCartColorMaterial) {
       existingCartColorMaterial.quantity += +newCart.quantity;
       return;

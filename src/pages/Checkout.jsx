@@ -94,7 +94,6 @@ const Checkout = () => {
     );
     setDistricts(data.data);
   };
-  console.log("districts", districts);
 
   const handleGetWards = async (e) => {
     setDistrict(e.target.value);
@@ -124,7 +123,6 @@ const Checkout = () => {
         status: 1,
         date: new Date(),
       });
-      console.log("res", res);
 
       if (res) {
         return true;
@@ -149,7 +147,10 @@ const Checkout = () => {
       // Your code here to submit the form
       // Navigate to the payment page
       let res = await axios.post(
-        "http://localhost:8000/api/v1/create_payment_url"
+        "http://localhost:8000/api/v1/create_payment_url",
+        {
+          amount: totalPrice,
+        }
       );
 
       if (res.data) {
@@ -201,10 +202,8 @@ const Checkout = () => {
     // Your code here to submit the form
   };
   const handleDataChange = (data) => {
-    console.log("data", data);
     setDataAddress(data);
   };
-  console.log("dataUser", dataAddress);
   return (
     <div className="mt-14 container2">
       <form

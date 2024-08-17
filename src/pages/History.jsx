@@ -143,22 +143,6 @@ const History = () => {
               ))}
             </tbody>
           </table>
-          <div className="flex items-center justify-between mt-4">
-            <Link
-              to={"/"}
-              className="text-white px-5 py-3 bg-green-500 rounded-lg text-lg font-semibold hover:opacity-70"
-            >
-              Tiếp tục mua hàng
-            </Link>
-            <div
-              className="text-red-600 text-lg font-semibold cursor-pointer"
-              onClick={() => {
-                carts.forEach((product) => removeCart(product._id));
-              }}
-            >
-              Xóa toàn bộ giỏ hàng
-            </div>
-          </div>
         </div>
       )}
     </div>

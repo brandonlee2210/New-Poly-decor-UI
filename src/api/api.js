@@ -4,12 +4,25 @@ export const getCategories = async () => {
   try {
     const response = await axios.get("http://localhost:8000/api/v1/categories");
 
-    console.log("response", response);
-
     return response.data;
   } catch (error) {
     console.log(error);
   }
+};
+
+export const getAllVariantsProduct = async () => {
+  try {
+    const response = await axios.get(
+      "http://localhost:8000/api/v1/variantProducts"
+    );
+    return response.data;
+    // You may want to handle the error differently depending on your application's requirements
+  } catch (error) {
+    console.log(error);
+
+    // You may want to handle the error differently depending on your application's requirements
+  }
+  return null;
 };
 
 export const getCommentByProductId = async (id) => {
@@ -17,7 +30,6 @@ export const getCommentByProductId = async (id) => {
     const response = await axios.get(
       "http://localhost:8000/api/v1/comments/byproduct/" + id
     );
-    console.log("response", response);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -31,8 +43,6 @@ export const addNewCategory = async (data) => {
       "http://localhost:8000/api/v1/categories",
       data
     );
-
-    console.log("response", response);
 
     return response.data;
   } catch (error) {
@@ -48,8 +58,6 @@ export const deleteCategory = async (id) => {
     const response = await axios.delete(
       `http://localhost:8000/api/v1/categories/${id}`
     );
-
-    console.log("response", response);
 
     return response.data;
   } catch (error) {
@@ -67,8 +75,6 @@ export const update = async (id, data) => {
       data
     );
 
-    console.log("response", response);
-
     return response.data;
   } catch (error) {
     console.log(error);
@@ -82,8 +88,6 @@ export const getProducts = async () => {
   try {
     const response = await axios.get("http://localhost:8000/api/v1/variants");
 
-    console.log("response", response);
-
     return response.data;
   } catch (error) {
     console.log(error);
@@ -96,7 +100,6 @@ export const getProductsFiltered = async (filter) => {
       "http://localhost:8000/api/v1/variants/filtered",
       filter
     );
-    console.log("response", response);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -127,7 +130,6 @@ export const getOrderDetails = async (id) => {
     const response = await axios.get(
       `http://localhost:8000/api/v1/orders/${id}`
     );
-    console.log("response", response);
     return response.data;
     // You can modify the return statement based on your application's requirements,
     // such as returning a specific piece of data or transforming the response data
@@ -143,8 +145,6 @@ export const getProductsPaginate = async (current, pageSize) => {
     const response = await axios.get(
       `http://localhost:8000/api/v1/variants?page=${current}&limit=${pageSize}`
     );
-
-    console.log("response", response);
 
     return response.data;
   } catch (error) {

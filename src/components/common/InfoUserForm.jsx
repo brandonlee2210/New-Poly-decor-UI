@@ -49,8 +49,6 @@ const InfoUserForm = (props) => {
     };
     fetchData();
   }, [form, id, provinces, districts, wards, province, district, ward]);
-  console.log(province);
-
   // Fetch provinces
   useEffect(() => {
     const getProvinces = async () => {
@@ -125,7 +123,6 @@ const InfoUserForm = (props) => {
           }, ${
             districts.find((x) => x.DistrictID == district)?.DistrictName
           }, ${wards.find((x) => x.WardCode == ward)?.WardName},${street}`;
-        console.log("address", address);
 
         props.onDataChange(address);
       }

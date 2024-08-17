@@ -102,8 +102,6 @@ const ProductComment = ({ id }) => {
     }, 1000);
   };
 
-  console.log(comments);
-
   const handleChange = (e) => {
     setValue(e.target.value);
   };
