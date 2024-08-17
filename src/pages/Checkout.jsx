@@ -14,7 +14,7 @@ const Checkout = () => {
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
-  const [deliveryFee, setDeliveryFee] = useState("Chưa xác định");
+  const [deliveryFee, setDeliveryFee] = useState(35000);
   const [email, setEmail] = useState("");
   const [payment, setPayment] = useState("atHome");
   const [dataAddress, setDataAddress] = useState({}); // state hứng dữ liệu từ InfoUserForm gửi lên
@@ -27,6 +27,8 @@ const Checkout = () => {
     (total, product) => total + product.price * product.quantity,
     0
   );
+  console.log(totalPrice + deliveryFee);
+  
   const finalPrice = totalPrice;
 
   const formatCurrencyVND = (amount) => {
@@ -59,7 +61,7 @@ const Checkout = () => {
         }
       );
 
-      setDeliveryFee(data.data.total);
+      setDeliveryFee(35000);
     } catch (error) {
       console.log(error);
     }
@@ -201,6 +203,8 @@ const Checkout = () => {
 
     // Your code here to submit the form
   };
+  console.log("Tổng giá trị", finalPrice+ deliveryFee);
+  
   const handleDataChange = (data) => {
     setDataAddress(data);
   };
@@ -301,16 +305,14 @@ const Checkout = () => {
           <div className="flex items-center justify-between mt-4">
             <span>Phí vận chuyển</span>
             <span className="font-semibold">
-              {deliveryFee.toLocaleString()}
+              {deliveryFee.toLocaleString()} ₫
             </span>
           </div>
 
           <div className="flex items-center justify-between mt-4">
             <span>Thành tiền</span>
             <span className="font-semibold">
-              {ward
-                ? (finalPrice + deliveryFee).toLocaleString()
-                : "Chưa xác định"}
+              { ( finalPrice+ deliveryFee).toLocaleString()} ₫
             </span>
           </div>
 
