@@ -51,8 +51,6 @@ const Header = () => {
     navigate(`/search/${keyword}`);
   };
 
-  console.log("isLoggedIn", isLoggedIn);
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {

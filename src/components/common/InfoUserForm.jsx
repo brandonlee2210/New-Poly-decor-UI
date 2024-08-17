@@ -40,17 +40,15 @@ const InfoUserForm = (props) => {
 
         setProvince(user.province);
         setDistrict(user.district);
-        setWard(user.ward)
-        
+        setWard(user.ward);
+
         setStreet(user.street);
       } catch (error) {
         console.log("Failed to fetch data:", error);
       }
     };
     fetchData();
-  }, [form, id,provinces, districts,wards,province,district,ward]);
-  console.log(province);
-  
+  }, [form, id, provinces, districts, wards, province, district, ward]);
   // Fetch provinces
   useEffect(() => {
     const getProvinces = async () => {
@@ -117,15 +115,16 @@ const InfoUserForm = (props) => {
 
   useEffect(() => {
     if (typeof props.onDataChange === "function") {
-
       if (province && district && ward) {
-        let address =`Tỉnh ${
-          provinces.find((x) => x.ProvinceID == province)?.ProvinceName
-        }, ${districts.find((x) => x.DistrictID == district)?.DistrictName}, ${
-          wards.find((x) => x.WardCode == ward)?.WardName
-        },${street}` || `Tỉnh ${province}, ${district}, ${ward}, ${street}` 
+        let address =
+          `Tỉnh ${
+            provinces.find((x) => x.ProvinceID == province)?.ProvinceName
+          }, ${
+            districts.find((x) => x.DistrictID == district)?.DistrictName
+          }, ${wards.find((x) => x.WardCode == ward)?.WardName},${street}` ||
+          `Tỉnh ${province}, ${district}, ${ward}, ${street}`;
         console.log("address", address);
-        
+
         props.onDataChange(address);
       }
     }

@@ -17,7 +17,6 @@ export const LoginProvider = ({ children }) => {
     }
   }, []);
 
-  console.log("isLoggedIn 2", isLoggedIn);
   const login = async (username, password) => {
     try {
       let res = await axios.post("http://localhost:8000/api/v1/auth/login", {
@@ -47,7 +46,6 @@ export const LoginProvider = ({ children }) => {
         password_confirmation: password,
       });
 
-      console.log("res", res);
       message.success("Đăng nhập thành công");
       setIsLoggedIn(true);
     } catch (err) {

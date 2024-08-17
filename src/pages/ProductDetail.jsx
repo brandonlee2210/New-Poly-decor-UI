@@ -9,7 +9,11 @@ import categoryImage1 from "../assets/images/category-1.1.jpg";
 import rightProductDetail from "../assets/images/right-product-detail.jpg";
 import ProductComment from "../components/common/Comment";
 import ProductItem from "../components/common/ProductItem";
-import { getProductById, getCommentByProductId } from "../api/api";
+import {
+  getProductById,
+  getCommentByProductId,
+  getAllVariantsProduct,
+} from "../api/api";
 import { Button, message } from "antd";
 import moment from "moment";
 
@@ -22,15 +26,39 @@ const colors = [
 const materials = ["Gỗ sồi", "Gỗ thông"];
 
 const ProductDetail = () => {
-  const { carts, addCart, removeCart } = useContext(CartContext);
+  const { carts, addCart, removeCart, addWhistlist } = useContext(CartContext);
   const { id } = useParams();
 
   const [product, setProduct] = useState({});
   const [variant, setVariant] = useState({});
   const [variants, setVariants] = useState([]);
-  const [activeColor, setActiveColor] = useState(colors[0].id);
+  const [activeColor, setActiveColor] = useState("");
   const [material, setMaterial] = useState(materials[0]);
+  const [color, setColor] = useState(colors[0]);
   const [quantity, setQuantity] = useState(1); // Thêm state cho số lượng
+
+  const [colorsArr, setColors] = useState([]);
+  const [materialsArr, setMaterials] = useState([]);
+
+  useEffect(() => {
+    getAllVariantsProduct().then((data) => {
+      let res = data.data;
+
+      const colors = res
+        ?.filter((v) => v.variantProductType === "color")
+        .map((x) => {
+          return { name: x.variantProductName, value: x.variantProductName };
+        });
+
+      const materials = res
+        ?.filter((v) => v.variantProductType === "material")
+        .map((x) => x.variantProductName);
+
+      setColors(colors);
+      setActiveColor(colors[0].value);
+      setMaterials(materials);
+    });
+  }, []);
 
   useEffect(() => {
     getProductById(id).then((res) => {
@@ -41,20 +69,20 @@ const ProductDetail = () => {
   }, [id]);
 
   // get comments from product id
-  useEffect(() => {
-    getCommentByProductId(id).then((res) => {
-      console.log("Comments: ", res);
-    });
-  }, [id]);
+  // useEffect(() => {
+  //   getCommentByProductId(id).then((res) => {
+  //     console.log("Comments: ", res);
+  //   });
+  // }, [id]);
 
-  const handleVariantChange = (colorId, material) => {
-    setActiveColor(colorId);
+  const handleVariantChange = (color, material) => {
+    console.log(color, material);
+    setActiveColor(color);
 
     if (!material) {
-      let variantHasColor = variants.find(
-        (variant) =>
-          variant.color === colors.find((c) => c.id === colorId).value
-      );
+      let variantHasColor = variants.find((variant) => variant.color === color);
+
+      console.log(variantHasColor, "hasColor");
 
       if (variantHasColor) {
         setVariant(variantHasColor);
@@ -63,20 +91,19 @@ const ProductDetail = () => {
       }
     }
 
-    const selectedColor = colors.find((x) => x.id === colorId);
-    if (!selectedColor) {
-      console.error(`Color with id ${colorId} not found`);
-      return;
-    }
+    // const selectedColor = colors.find((x) => x.id === color);
+    // if (!selectedColor) {
+    //   console.error(`Color with id ${} not found`);
+    //   return;
+    // }
 
     const newVariant = variants.find(
-      (variant) =>
-        variant.color === selectedColor.value && variant.material === material
+      (variant) => variant.color === color && variant.material === material
     );
 
     if (!newVariant) {
       console.error(
-        `Variant with color ${selectedColor.value} and material ${material} not found`
+        `Variant with color ${color} and material ${material} not found`
       );
       return;
     }
@@ -92,20 +119,23 @@ const ProductDetail = () => {
       price: variant.price,
       quantity, // Thêm số lượng vào dữ liệu giỏ hàng
     };
-    console.log(cartData);
     addCart(cartData);
     message.success(`Thêm thành công ${product.name} vào giỏ hàng`);
   };
 
-  const availableColors = colors.filter((color) =>
+  const addToWhistlist = () => {
+    addWhistlist(product);
+    message.success(`Thêm thành công ${product.name} vào danh sách yêu thích`);
+  };
+
+  const availableColors = colorsArr.filter((color) =>
     variants.some((variant) => variant.color === color.value)
   );
 
+  console.log("color", activeColor);
+
   const availableMaterials = variants
-    .filter(
-      (variant) =>
-        variant.color === colors.find((c) => c.id === activeColor).value
-    )
+    .filter((variant) => variant.color === activeColor)
     .map((variant) => variant.material);
 
   return (
@@ -159,6 +189,28 @@ const ProductDetail = () => {
               ))}
             </div>
           </div>
+          {availableColors.length > 0 && (
+            <div className="mt-5">
+              <label
+                htmlFor="material"
+                className="text-lg font-semibold text-brown-strong"
+              >
+                Màu sắc:{" "}
+              </label>
+              <select
+                id="color"
+                className="border border-brown-strong outline-none py-1 px-2 rounded-lg"
+                value={variant.color}
+                onChange={(e) => handleVariantChange(e.target.value, null)}
+              >
+                {availableColors.map((color, index) => (
+                  <option key={color.name} value={color.name}>
+                    {color.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           {availableMaterials.length > 0 && (
             <div className="mt-5">
               <label
@@ -199,8 +251,12 @@ const ProductDetail = () => {
             />
           </div>
           <div className="grid grid-cols-2 gap-6 mt-10">
-            <div className="bg-brown-light text-brown-strong flex items-center justify-center gap-1 py-4 rounded-lg text-xl font-bold duration-200 border-2 hover:bg-white hover:border-brown-strong hover:border-2">
-              <i className="fa-regular fa-credit-card"></i> Mua ngay
+            <div
+              onClick={addToWhistlist}
+              className="bg-brown-light text-brown-strong flex items-center justify-center gap-1 py-4 rounded-lg text-xl font-bold duration-200 border-2 hover:bg-white hover:border-brown-strong hover:border-2"
+            >
+              <i className="fa-solid fa-heart text-xl mr-1 hover:text-red-600 duration-200"></i>{" "}
+              Thêm vào danh sách yêu thích
             </div>
             <div
               onClick={addToCart}
