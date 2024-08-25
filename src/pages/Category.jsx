@@ -106,7 +106,7 @@ const Category = () => {
   }, [name]);
   return (
     <>
-      <div className="banner">
+      <div className="banner flex justify-center">
         <img src={bannerCategoryPage} alt="banner" />
       </div>
       <div className="container">

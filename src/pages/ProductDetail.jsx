@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import categoryImage1 from "../assets/images/category-1.1.jpg";
 import rightProductDetail from "../assets/images/right-product-detail.jpg";
 import ProductComment from "../components/common/Comment";
+import Review from "../components/common/Review";
 import ProductItem from "../components/common/ProductItem";
 import {
   getProductById,
@@ -22,6 +23,47 @@ const colors = [
   { name: "Màu vàng", id: "bg-yellow-main", value: "Vàng" },
   { name: "Màu trắng", id: "bg-white", value: "Trắng" },
 ];
+
+const reviews = [
+  {
+    author: "User 1",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    rating: 5,
+    comment: "This is a great product!",
+    datetime: "2022-01-01",
+  },
+  {
+    author: "User 2",
+    avatar: "https://randomuser.me/api/portraits/men/40.jpg",
+    rating: 4,
+    comment: "Good quality, but a bit expensive.",
+    datetime: "2022-01-02",
+  },
+];
+
+const StarRating = ({ rating, onRatingChange }) => {
+  const handleClick = (value) => {
+    onRatingChange(value);
+  };
+
+  const { id } = useParams();
+
+  console.log(id);
+
+  return (
+    <div className="star-rating">
+      {[1, 2, 3, 4, 5].map((value) => (
+        <span
+          key={value}
+          className={`star ${value <= rating ? "filled" : ""}`}
+          onClick={() => handleClick(value)}
+        >
+          &#9733;
+        </span>
+      ))}
+    </div>
+  );
+};
 
 const materials = ["Gỗ sồi", "Gỗ thông"];
 
@@ -249,6 +291,15 @@ const ProductDetail = () => {
           <img src={rightProductDetail} alt="right image" />
         </div>
       </div>
+      <div className=" mt-5">
+        <h2 className="font-bold text-[32px]">Đánh giá sản phẩm</h2>
+        <div>
+          {reviews.map((review, index) => (
+            <Review key={index} {...review} />
+          ))}
+        </div>
+      </div>
+      <h2 className="font-bold text-[32px]">Bình luận sản phẩm</h2>
       <ProductComment id={id} />
     </div>
   );

@@ -29,7 +29,7 @@ const History = () => {
     2: "Đang giao hàng",
     3: "Đã giao hàng",
     4: "Đã huỷ",
-    5: "Đã nhận được hàng",
+    5: "Đã nhận hàng",
   };
 
   const colorOrderStatus = {
@@ -37,6 +37,7 @@ const History = () => {
     2: "#1890FF",
     3: "#2F5496",
     4: "#F5222D",
+    5: "#2F5496",
   };
 
   const getOrderAndColorStatus = (status) => {
