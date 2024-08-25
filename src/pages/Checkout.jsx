@@ -124,6 +124,7 @@ const Checkout = () => {
         address,
         status: 1,
         date: new Date(),
+        products: carts,
       });
 
       if (res) {
@@ -145,6 +146,33 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let address = `Tỉnh ${
+      provinces.find((x) => x.ProvinceID == province)?.ProvinceName
+    }, ${districts.find((x) => x.DistrictID == district)?.DistrictName}, ${
+      wards.find((x) => x.WardCode == ward)?.WardName
+    }`;
+
+    let orderDetailsData = carts.map((x) => {
+      return {
+        ...x,
+        variantID: x._id,
+      };
+    });
+
+    orderDetailsData.forEach((x) => {
+      delete x._id;
+    });
+
+    let orderDataSave = {
+      orderData: {
+        address: address,
+        total: totalPrice + deliveryFee,
+        userID: "60d5ec49f8d2c72b8c8e4b8b",
+      },
+      orderDetailsData,
+    };
+
     if (payment == "vnpay") {
       // Your code here to submit the form
       // Navigate to the payment page
@@ -152,6 +180,7 @@ const Checkout = () => {
         "http://localhost:8000/api/v1/create_payment_url",
         {
           amount: totalPrice,
+          orderDataSave,
         }
       );
 
@@ -161,32 +190,6 @@ const Checkout = () => {
         window.location.href = "/";
       }
     } else {
-      let address = `Tỉnh ${
-        provinces.find((x) => x.ProvinceID == province)?.ProvinceName
-      }, ${districts.find((x) => x.DistrictID == district)?.DistrictName}, ${
-        wards.find((x) => x.WardCode == ward)?.WardName
-      }`;
-
-      let orderDetailsData = carts.map((x) => {
-        return {
-          ...x,
-          variantID: x._id,
-        };
-      });
-
-      orderDetailsData.forEach((x) => {
-        delete x._id;
-      });
-
-      let orderDataSave = {
-        orderData: {
-          address: address,
-          total: totalPrice + deliveryFee,
-          userID: "60d5ec49f8d2c72b8c8e4b8b",
-        },
-        orderDetailsData,
-      };
-
       let res = await axios.post(
         "http://localhost:8000/api/v1/orders/save-order",
         orderDataSave

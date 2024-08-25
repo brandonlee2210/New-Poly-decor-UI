@@ -35,6 +35,12 @@ const Cart = () => {
     navigate("/checkout");
   };
 
+  const handleOnClickImg = (id) => {
+    // Implement your image click event here
+    // Example: Open a modal with product details or show a toast notification
+    navigate(`/product/${id}`);
+  };
+
   return (
     <div className="container2 grid grid-cols-[3fr_1fr] gap-5 mt-16">
       {isCartEmpty ? (
@@ -77,6 +83,7 @@ const Cart = () => {
                       src={`/src/assets/images/${product.image}`}
                       alt="product image"
                       className="w-[200px]"
+                      onClick={() => handleOnClickImg(product._id)}
                     />
                     <div>
                       <span className="text-lg font-semibold">

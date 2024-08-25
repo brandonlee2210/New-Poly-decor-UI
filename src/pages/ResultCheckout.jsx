@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { CartContext } from "../CartContext";
+import { useParams } from "react-router-dom";
 import { Button, Result } from "antd";
 const App = () => {
   const { removeAll } = useContext(CartContext);
 
+  const { src } = useParams();
+
   useEffect(() => {
     removeAll();
-  }, [removeAll]);
+  }, []);
 
   return (
     <Result

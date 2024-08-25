@@ -112,6 +112,11 @@ const ProductDetail = () => {
   };
 
   const addToCart = () => {
+    if (quantity > variant.quantity) {
+      message.error("Bạn đã đặt quá số lượng sản phẩm trong kho");
+      return;
+    }
+
     let cartData = {
       ...product,
       material,
@@ -154,16 +159,6 @@ const ProductDetail = () => {
             <span className="text-brown-light mr-1">Danh mục:</span>
             {product.categoryName}
           </div>
-          <div className="flex items-center gap-2 mt-2">
-            <div>
-              <i className="fa-solid fa-star text-yellow-500"></i>
-              <i className="fa-solid fa-star text-yellow-500"></i>
-              <i className="fa-solid fa-star text-yellow-500"></i>
-              <i className="fa-solid fa-star text-yellow-500"></i>
-              <i className="fa-regular fa-star text-yellow-500"></i>
-            </div>
-            |<div className="text-gray-500">1000 lượt mua</div>
-          </div>
           <div className="mt-3 mr-3 text-lg text-brown-light font-semibold">
             Số lượng: {variant?.quantity}
           </div>
@@ -172,22 +167,6 @@ const ProductDetail = () => {
           </div>
           <div className="mt-3 text-3xl font-bold text-red-600">
             Giá: {variant?.price} ₫
-          </div>
-          <div className="mt-5 flex items-center gap-3">
-            <span className="text-lg font-semibold text-brown-strong">
-              Màu sắc:{" "}
-            </span>
-            <div className="flex items-center gap-5">
-              {availableColors.map((color) => (
-                <span
-                  key={color.id}
-                  className={`w-7 h-7 duration-300 cursor-pointer hover:scale-125 shadow-[0_0_6px_rgba(0,0,0,0.5)] ${
-                    color.id
-                  } ${activeColor === color.id ? "scale-125" : ""}`}
-                  onClick={() => handleVariantChange(color.id, null)}
-                ></span>
-              ))}
-            </div>
           </div>
           {availableColors.length > 0 && (
             <div className="mt-5">

@@ -39,12 +39,14 @@ export const LoginProvider = ({ children }) => {
     }
   };
 
-  const signup = async (username, password) => {
+  const signup = async (username, password, email) => {
     try {
       let res = await axios.post("http://localhost:8000/api/v1/auth/signup", {
         username: username,
         password: password,
+        email: email,
         password_confirmation: password,
+        s,
       });
 
       message.success("Đăng kí tài khoản thành công");

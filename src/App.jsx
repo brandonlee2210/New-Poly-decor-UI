@@ -16,6 +16,7 @@ import SearchResult from "./pages/SearchResult.jsx";
 import { CartProvider } from "./CartContext.jsx";
 import { LoginProvider } from "./LoginContext.jsx";
 import InfoUserForm from "./components/common/InfoUserForm.jsx";
+import ReviewPage from "./pages/Review.jsx";
 
 function App() {
   return (
@@ -31,11 +32,14 @@ function App() {
               <Route path="cart" element={<Cart />} />
               <Route path="checkout" element={<Checkout />} />
               <Route path="wishlist" element={<Wishlist />} />
+              <Route path="result-checkout/:src" element={<ResultCheckout />} />
               <Route path="result-checkout" element={<ResultCheckout />} />
               <Route path="update-info" element={<InfoUserForm />} />
               <Route path="history" element={<History />} />
               <Route path="history/:id" element={<HistoryDetail />} />
+              <Route path="reviews/:id" element={<ReviewPage />} />
             </Route>
+            id
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
           </Routes>

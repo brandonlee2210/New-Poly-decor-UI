@@ -108,6 +108,23 @@ export const getProductsFiltered = async (filter) => {
   // You may want to handle the error differently depending on your application's requirements
 };
 
+export const createReview = async (data) => {
+  try {
+    const response = await axios.post(
+      `http://localhost:8000/api/v1/reviews`,
+      data
+    );
+
+    return response.data;
+
+    // You can modify the return statement based on your application's requirements,
+    // such as returning a specific piece of data or transforming the response data
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
 export const getProductById = async (id) => {
   try {
     const response = await axios.get(
@@ -128,7 +145,7 @@ export const getProductById = async (id) => {
 export const getOrderDetails = async (id) => {
   try {
     const response = await axios.get(
-      `http://localhost:8000/api/v1/orders/${id}`
+      `http://localhost:8000/api/v1/orders/details/${id}`
     );
     return response.data;
     // You can modify the return statement based on your application's requirements,

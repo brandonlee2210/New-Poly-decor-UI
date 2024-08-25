@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-
 import { CartContext } from "../CartContext";
-
 import { Link } from "react-router-dom";
+import { Modal } from "antd";
 
 const History = () => {
   const [orders, setOrders] = useState([]);
@@ -30,6 +29,7 @@ const History = () => {
     2: "Đang giao hàng",
     3: "Đã giao hàng",
     4: "Đã huỷ",
+    5: "Đã nhận được hàng",
   };
 
   const colorOrderStatus = {
@@ -43,6 +43,21 @@ const History = () => {
     return { status: orderStatus[status], color: colorOrderStatus[status] };
   };
 
+  const handleChangeStatus = async (orderId, newStatus) => {
+    try {
+      await axios.put(`http://localhost:8000/api/v1/orders/${orderId}`, {
+        status: newStatus,
+      });
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId ? { ...order, status: newStatus } : order
+        )
+      );
+    } catch (error) {
+      console.error("Failed to update order status", error);
+    }
+  };
+
   return (
     <div className="container2 gap-5 mt-16">
       {isOrdersEmpty ? (
@@ -50,12 +65,6 @@ const History = () => {
           <div className="text-center text-2xl font-semibold text-brown-strong">
             Đơn hàng của bạn trống.
           </div>
-          <Link
-            to={"/"}
-            className="text-white px-5 py-3 bg-green-500 rounded-lg text-lg font-semibold hover:opacity-70"
-          >
-            Tiếp tục mua hàng
-          </Link>
         </div>
       ) : (
         <div>
@@ -88,25 +97,16 @@ const History = () => {
                     {index + 1}
                   </td>
                   <td className="text-brown-strong p-3 align-middle flex items-center gap-3 max-w-[520px]">
-                    {/* <img
-                      src={`/src/assets/images/sale-product-1.jpg`}
-                      alt="product image"
-                      className="w-[200px]"
-                    /> */}
                     <div>
                       <span className="text-lg font-semibold">
-                        {/* to ISO String */}
-                        {
-                          new Date(product.orderDate).toLocaleDateString(
-                            "vi-VN",
-                            {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            }
-                          )
-                          // new Date(product.orderDate).toISOString().split('T')[0]
-                        }
+                        {new Date(product.orderDate).toLocaleDateString(
+                          "vi-VN",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}
                       </span>
                     </div>
                   </td>
@@ -128,6 +128,7 @@ const History = () => {
                       {getOrderAndColorStatus(product.status).status}
                     </div>
                   </td>
+
                   <td className="text-brown-strong p-3 text-xl hover:text-red-600 cursor-pointer">
                     <Link
                       to={`/history/${product._id}`}
@@ -139,6 +140,19 @@ const History = () => {
                       Xem chi tiết
                     </Link>
                   </td>
+                  {product.status == 2 && (
+                    <td className="text-brown-strong p-3 text-xl hover:text-red-600 cursor-pointer">
+                      <div
+                        className="text-red px-5 py-2 rounded-lg text-lg font-semibold hover:opacity-70"
+                        onClick={() => {
+                          // Handle click to view order details
+                          handleChangeStatus(product._id, 5);
+                        }}
+                      >
+                        Đã nhận
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
