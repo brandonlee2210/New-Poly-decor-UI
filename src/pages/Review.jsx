@@ -36,16 +36,20 @@ const url = "https://api.cloudinary.com/v1_1/deunymbky/image/upload";
 const ProductDetail = () => {
   const [product, setProduct] = useState({});
 
+  
   const { id } = useParams();
    console.log(id);
    
-  useEffect(() => {
-    getProductById(id).then((res) => {
-      console.log(res);
-      
-      setProduct(res);
-    });
-  }, []);
+   useEffect(() => {
+    const productId = id 
+  
+    if (productId) {
+      getProductById(productId).then((res) => {
+        console.log(res);
+        setProduct(res);
+      });
+    }
+  }, [id,]);
   return (
     <div className="flex justify-between gap-[30px]">
       <div>
@@ -78,7 +82,7 @@ const Review = () => {
   const [uploading, setUploading] = useState(false);
 
   const { id } = useParams();
-
+  const idUser = localStorage.getItem("id")
   console.log(rating);
 
   const handleRatingChange = (value) => {
@@ -140,7 +144,7 @@ const Review = () => {
       productID: id,
       createdAt: new Date(),
       updatedAt: new Date(),
-      userID: id, // Replace with actual user ID
+      userID: idUser, // Replace with actual user ID
     };
 
     // Call the createReview API with the review object
@@ -154,7 +158,6 @@ const Review = () => {
 
   return (
     <div className="review-container mt-5">
-      <ProductDetail />
       <h2 className="font-bold text-[32px]">Gửi đánh giá sản phẩm</h2>
       <form
         className="review-form"

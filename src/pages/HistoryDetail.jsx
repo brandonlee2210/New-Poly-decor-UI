@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { LoginContext } from "../LoginContext";
 
 const History = () => {
   const { carts, addCart, removeCart } = useContext(CartContext);
@@ -15,7 +16,7 @@ const History = () => {
   const [orderDetails, setOrderDetails] = useState([]);
   const [statusOrder, setStatusOrder] = useState({});
   const { id } = useParams();
-
+  const { userInfo } = useContext(LoginContext)
   const isCartEmpty = orderDetails.length === 0;
 
   const totalQuantity = carts.length;
@@ -31,16 +32,16 @@ const History = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       let response = await axios.get(
-        "http://localhost:8000/api/v1/ordersByUser/669f63c0a71e0102f6be60a6"
+        "http://localhost:8000/api/v1/ordersByUser/" + userInfo._id
       );
-      console.log(response.data);
+      console.log("response",response.data);
 
       const statusOder = response.data.find((item) => item._id === id);
       setStatusOrder(statusOder);
     };
     fetchOrders();
   }, []);
-  console.log(statusOrder);
+  console.log("statusOrder",statusOrder);
 
   return (
     <div className="container2 grid grid-cols-[3fr_1fr] gap-5 mt-16">
@@ -103,16 +104,21 @@ const History = () => {
                       onClick={() => removeCart(product._id)}
                     ></i>
                   </td>
-                  <td className="text-brown-strong p-3 text-xl hover:text-red-600 cursor-pointer">
-                    {statusOrder.status === 5 && (
+                  {
+                    statusOrder.status === 5 && (
+                      <td className="text-brown-strong p-3 text-xl hover:text-red-600 cursor-pointer">
                       <Link
                         to={`/reviews/${product._id}`}
                         className="text-white px-5 py-3 bg-yellow-500 rounded-lg text-lg font-semibold hover:opacity-70"
                       >
                         Đánh giá
+                        {console.log("product._id",product)
+                        }
                       </Link>
-                    )}
-                  </td>
+                    </td>
+                    )
+                  }
+             
                 </tr>
               ))}
             </tbody>

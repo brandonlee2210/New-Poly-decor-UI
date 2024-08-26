@@ -1,10 +1,11 @@
 import axios from "axios";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import vnpay from "../assets/images/VNPAY.webp";
 import InfoUserForm from "../components/common/InfoUserForm";
 import { CartContext } from "../CartContext";
 import { LoginContext } from "../LoginContext";
 import { useNavigate } from "react-router-dom";
+import { notification } from "antd";
 
 const Checkout = () => {
   const { carts, addCart, removeCart, removeAll } = useContext(CartContext);
@@ -33,41 +34,80 @@ const Checkout = () => {
 
   const finalPrice = totalPrice;
 
-  const formatCurrencyVND = (amount) => {
-    let formattedAmount = amount
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    return `${formattedAmount} ₫`;
-  };
-
   const caculateDeliveryFee = async () => {
     try {
-      const { data } = await axios.post(
-        "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee",
-        {
-          service_id: 53321,
-          insurance_value: 100000,
-          coupon: null,
-          from_district_id: 1482,
-          to_district_id: parseInt(district),
-          to_ward_code: ward,
-          height: 10,
-          length: 10,
-          weight: 1000,
-          width: 10,
-        },
-        {
-          headers: {
-            token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
-          },
-        }
-      );
-      // console.log(`data: ${data}`);
-      setDeliveryFee(data.data.total);
+      const sampleData = {
+        service_id: 53321,
+        insurance_value: finalPrice,
+        coupon: null,
+        from_district_id: 1542,
+        to_district_id: 1444,
+        to_ward_code: "20314",
+        height: 15,
+        length: 15,
+        weight: 1000,
+        width: 15,
+      };
+      console.log("sampleData", sampleData);
+
+      //   const { data } = await axios.post(
+      //     "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee",
+      //     sampleData,
+      //     {
+      //       headers: {
+      //         token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
+      //       },
+      //     }
+      //   );
+      //  console.log(data);
+
+      // setDeliveryFee(35000);
     } catch (error) {
       console.log(error);
     }
   };
+  console.log();
+
+  useEffect(() => {
+    const fetchShippingFee = async () => {
+      try {
+        if (dataAddress) {
+          const sampleData = {
+            service_type_id: 2,
+            insurance_value: finalPrice,
+            coupon: null,
+            from_district_id: 1542,
+            to_district_id: parseInt(dataAddress.district),
+            to_ward_code: dataAddress.ward.toString(),
+            height: 100,
+            length: 200,
+            weight: 3000,
+            width: 100,
+          };
+          const { data } = await axios.post(
+            "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee",
+            sampleData,
+            {
+              headers: {
+                token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
+              },
+            }
+          );
+          console.log("data", data.data.total);
+
+          setDeliveryFee(data.data.total);
+        }
+      } catch (error) {
+        if (error.response) {
+          console.log("Lỗi từ server:", error.response.data);
+        } else {
+          console.log("Lỗi không xác định:", error);
+        }
+      }
+    };
+
+    fetchShippingFee();
+  }, [dataAddress]);
 
   useEffect(() => {
     const getProvinces = async () => {
@@ -117,19 +157,27 @@ const Checkout = () => {
   const handleGetWardCode = (e) => {
     setWard(e.target.value);
   };
+  console.log("dataAddress", dataAddress);
 
   const sendEmail = async (address) => {
+    console.log(address);
+    console.log(carts);
+    console.log(dataAddress.name);
+
     // use axios
     try {
       const res = await axios.post("http://localhost:8000/api/v1/send-email", {
         // your data
         total: totalPrice,
         address,
+        phone: dataAddress.phone,
+        email: dataAddress.email,
+        fullname: dataAddress.name,
         status: 1,
         date: new Date(),
         products: carts,
       });
-
+      console.log(res);
       if (res) {
         return true;
       } else {
@@ -146,16 +194,30 @@ const Checkout = () => {
       caculateDeliveryFee();
     }
   }, [ward]);
+  const handleDataChange = useCallback((data) => {
+    setDataAddress(data);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let address = `Tỉnh ${
-      provinces.find((x) => x.ProvinceID == province)?.ProvinceName
-    }, ${districts.find((x) => x.DistrictID == district)?.DistrictName}, ${
-      wards.find((x) => x.WardCode == ward)?.WardName
-    }`;
-
+    // let address = `Tỉnh ${
+    //   provinces.find((x) => x.ProvinceID == province)?.ProvinceName
+    // }, ${districts.find((x) => x.DistrictID == district)?.DistrictName}, ${
+    //   wards.find((x) => x.WardCode == ward)?.WardName
+    // }`;
+    if (
+      !dataAddress.address ||
+      !dataAddress.name ||
+      !dataAddress.email ||
+      !dataAddress.phone
+    ) {
+      notification.error({
+        message: "Thất bại",
+        description: "Vui lòng cập nhật đầy đủ thông tin trước khi đặt hàng",
+      });
+      return;
+    }
     let orderDetailsData = carts.map((x) => {
       return {
         ...x,
@@ -169,10 +231,11 @@ const Checkout = () => {
 
     let orderDataSave = {
       orderData: {
-        address: dataAddress,
+        address: dataAddress.address,
         total: totalPrice + deliveryFee,
         email: dataAddress.email,
         userID: userInfo._id,
+        fullname: dataAddress.name,
         paymentMethod: payment,
         status: 1,
         date: new Date(),
@@ -203,7 +266,7 @@ const Checkout = () => {
         orderDataSave
       );
 
-      let emailResutl = await sendEmail(address);
+      let emailResutl = await sendEmail(dataAddress.address);
 
       // console.log(res);
 
@@ -216,9 +279,6 @@ const Checkout = () => {
   };
   // console.log("Tổng giá trị", finalPrice + deliveryFee);
 
-  const handleDataChange = (data) => {
-    setDataAddress(data);
-  };
   return (
     <div className="mt-14 container2">
       <form
@@ -258,6 +318,7 @@ const Checkout = () => {
                 name=""
                 id="delivery"
               />
+
               <label htmlFor="delivery">Giao hàng nhanh</label>
             </div>
           </div>

@@ -55,6 +55,10 @@ const Header = () => {
     {
       key: "3",
       label: <Link to={"/forgot"}>Đổi mật khẩu</Link>,
+    },
+    {
+      key: "4",
+      label: <Link to={"/forgot-password"}>Quên mật khẩu</Link>,
     }
   ];
  
@@ -87,7 +91,7 @@ const Header = () => {
   return (
     <div className="header sticky top-0 left-0 right-0 z-10">
       <div className="bg-brown-light">
-        <div className="container header-top flex justify-between items-center py-6">
+        <div className="container2 header-top flex justify-between items-center py-6">
           <Link to={"/"}>
             <Logo />
           </Link>
@@ -141,7 +145,7 @@ const Header = () => {
             Đơn hàng
           </Link>
 
-          <div className="hotline bg-brown-strong p-2 px-4 rounded-lg">
+          <div className="hotline bg-brown-strong p-2 px-4 rounded-lg ">
             <a
               href="tel:0366027883"
               className="flex items-center gap-3 text-brown-light font-bold text-sm"
@@ -165,7 +169,7 @@ const Header = () => {
                   <div className="h-9 w-9 overflow-hidden rounded-full flex items-center">
                     <img src={amdin} alt="avatar" />{" "}
                   </div>
-                  {userInfo?.username || "Khách hàng"}
+                  {user?.fullName || "Khách hàng"}
                 </div>
               </Dropdown>
             ) : (

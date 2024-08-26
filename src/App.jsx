@@ -18,6 +18,7 @@ import { LoginProvider } from "./LoginContext.jsx";
 import InfoUserForm from "./components/common/InfoUserForm.jsx";
 import ReviewPage from "./pages/Review.jsx";
 import ForgotPw from "./pages/ForgotPw.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
 
 function App() {
   return (
@@ -32,7 +33,8 @@ function App() {
               <Route path="search/:keyword" element={<SearchResult />} />
               <Route path="cart" element={<Cart />} />
               <Route path="forgot" element={<ForgotPw />} />
-
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              
               <Route path="checkout" element={<Checkout />} />
               <Route path="wishlist" element={<Wishlist />} />
               <Route path="result-checkout/:src" element={<ResultCheckout />} />

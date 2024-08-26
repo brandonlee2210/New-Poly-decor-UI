@@ -16,6 +16,7 @@ import {
   getAllVariantsProduct,
 } from "../api/api";
 import { Button, message, notification } from "antd";
+import { Button, message, notification } from "antd";
 import moment from "moment";
 
 const colors = [
@@ -168,9 +169,10 @@ const ProductDetail = () => {
     }
 
     if (newQuantity > variant.quantity) {
-      message.error(
-        "Số lượng sản phẩm trong giỏ hàng vượt quá số lượng trong kho"
-      );
+      notification.error({
+        message: "Thêm vào giỏ hàng",
+        description: "Số lượng sản phẩm trong giỏ hàng vượt quá số lượng trong kho",
+      })
       return;
     }
     // check if the variant in cart plus current quantity is greater than the quantity in stock

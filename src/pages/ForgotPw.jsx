@@ -11,10 +11,9 @@ const ForgotPw = () => {
         `http://localhost:8000/api/v1/auth/${id}`,
         values
       );
-      if(res.status){
+      if (res.status) {
         message.success("Đổi mật khẩu không thành công!");
       }
-      
     } catch (error) {
       message.error("Đổi mật khẩu không thành công!");
     }
@@ -76,7 +75,15 @@ const ForgotPw = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" className="w-full">
+          <Button
+            htmlType="submit"
+            className="w-full bg-[rgb(50,20,5)] "
+            style={{
+              backgroundColor: 'rgb(221,182,113)', // Hoặc màu bạn muốn
+              color: ' rgb(50,20,5) ', // Hoặc màu bạn muốn
+              boxShadow: 'none' 
+            }}
+          >
             Đổi mật khẩu
           </Button>
         </Form.Item>

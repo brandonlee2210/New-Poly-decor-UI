@@ -85,7 +85,7 @@ const History = () => {
                 <th className="text-brown-strong font-semibold text-lg">
                   Ngày đặt
                 </th>
-                <th className="text-brown-strong font-semibold text-lg">
+                <th className="text-brown-strong font-semibold text-lg ">
                   Địa chỉ
                 </th>
                 <th className="text-brown-strong font-semibold text-lg">
@@ -117,7 +117,7 @@ const History = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="text-brown-strong p-3 align-middle">
+                  <td className={`text-brown-strong p-3 align-middle ${product.status == 2 ? "w-[400px]" : ""}`}>
                     {product.address}
                   </td>
                   <td className="text-brown-strong p-3 text-lg font-semibold">

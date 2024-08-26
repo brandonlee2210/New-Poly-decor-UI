@@ -68,7 +68,13 @@ const SaleProducts = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       const response = await getProductsPaginate(1, 6);
-      setSaleProducts(response.data);
+      console.log("products",response.data);
+      const disableProduct = response.data.filter(product => 
+        product.variants.some(variant => variant.quantity > 0)
+      );
+      console.log(disableProduct);
+      
+      setSaleProducts(disableProduct);
     };
 
     fetchProducts();
