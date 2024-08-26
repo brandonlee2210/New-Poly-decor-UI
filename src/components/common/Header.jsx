@@ -181,7 +181,7 @@ const Header = () => {
           <nav>
             <ul className="flex items-center gap-10 py-4 font-semibold text-brown-light uppercase">
               {categories.map((category) => (
-                <li key={category.id}>
+                <li key={category._id}>
                   <Link to={`/category/${category.name}`}>{category.name}</Link>
                 </li>
               ))}

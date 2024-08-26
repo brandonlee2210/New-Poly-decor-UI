@@ -49,7 +49,7 @@ const Cart = () => {
             Giỏ hàng của bạn trống.
           </div>
           <Link
-            to={"/"}
+            to={"/search/empty"}
             className="text-white px-5 py-3 bg-green-500 rounded-lg text-lg font-semibold hover:opacity-70"
           >
             Tiếp tục mua hàng
@@ -80,7 +80,7 @@ const Cart = () => {
                 <tr key={index} className="border-b border-brown-strong">
                   <td className="text-brown-strong p-3 align-middle flex items-center gap-3 max-w-[520px]">
                     <img
-                      src={`/src/assets/images/${product.image}`}
+                      src={product.image}
                       alt="product image"
                       className="w-[200px]"
                       onClick={() => handleOnClickImg(product._id)}
@@ -155,7 +155,7 @@ const Cart = () => {
           </table>
           <div className="flex items-center justify-between mt-4">
             <Link
-              to={"/"}
+              to={"/search/empty"}
               className="text-white px-5 py-3 bg-green-500 rounded-lg text-lg font-semibold hover:opacity-70"
             >
               Tiếp tục mua hàng

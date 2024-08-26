@@ -179,8 +179,6 @@ const ProductDetail = () => {
     variants.some((variant) => variant.color === color.value)
   );
 
-  console.log("color", activeColor);
-
   const availableMaterials = variants
     .filter((variant) => variant.color === activeColor)
     .map((variant) => variant.material);

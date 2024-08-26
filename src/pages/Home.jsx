@@ -9,10 +9,6 @@ import categoryBanner1 from "../assets/images/category-1-banner.png";
 import categoryBanner2 from "../assets/images/category-2-banner.png";
 import categoryBanner3 from "../assets/images/category-3-banner.png";
 import categoryBanner4 from "../assets/images/category-4-banner.png";
-import categoryImage1 from "../assets/images/category-1.1.jpg";
-import categoryImage2 from "../assets/images/category-2.1.jpg";
-import categoryImage3 from "../assets/images/category-3.1.jpg";
-import categoryImage4 from "../assets/images/category-4.1.jpg";
 import { Link } from "react-router-dom";
 import Feedback from "../components/common/Feedback";
 import Partner from "../components/home/Partner";
@@ -23,6 +19,7 @@ import React, { useState, useEffect } from "react";
 
 const Home = () => {
   const [categories, setCategories] = useState([]);
+  const [productsCategory, setProductsCategory] = useState([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -30,7 +27,19 @@ const Home = () => {
         const response = await axios.get(
           "http://localhost:8000/api/v1/categories"
         );
-        setCategories(response.data.data);
+        const fetchedCategories = response.data.data.slice(0, 4);
+        setCategories(fetchedCategories);
+
+        const productsArray = await Promise.all(
+          fetchedCategories.map(async (category) => {
+            const response = await axios.get(
+              "http://localhost:8000/api/v1/orders/variants/" + category.name
+            );
+            return response.data.slice(0, 4);
+          })
+        );
+
+        setProductsCategory(productsArray);
       } catch (error) {
         console.error(error);
       }
@@ -39,175 +48,59 @@ const Home = () => {
     fetchCategories();
   }, []);
 
-  const productsCate1 = [
-    {
-      id: 1,
-      image: "category-1.1.jpg",
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 2,
-      image: "category-1.1.jpg",
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 3,
-      image: "category-1.1.jpg",
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 4,
-      image: "category-1.1.jpg",
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-  ];
-
-  const productsCate2 = [
-    {
-      id: 1,
-      image: "category-2.1.jpg",
-      name: "Bộ Sofa 3 Băng Góc Phải SF672-Nano1-28",
-      price: "26.600.000 ₫",
-      initPrice: "29.600.000 ₫",
-    },
-    {
-      id: 2,
-      image: "category-2.1.jpg",
-      name: "Bộ Sofa 3 Băng Góc Phải SF672-Nano1-28",
-      price: "26.600.000 ₫",
-      initPrice: "29.600.000 ₫",
-    },
-    {
-      id: 3,
-      image: "category-2.1.jpg",
-      name: "Bộ Sofa 3 Băng Góc Phải SF672-Nano1-28",
-      price: "26.600.000 ₫",
-      initPrice: "29.600.000 ₫",
-    },
-    {
-      id: 4,
-      image: "category-2.1.jpg",
-      name: "Bộ Sofa 3 Băng Góc Phải SF672-Nano1-28",
-      price: "26.600.000 ₫",
-      initPrice: "29.600.000 ₫",
-    },
-  ];
-
-  const productsCate3 = [
-    {
-      id: 1,
-      image: "category-3.1.jpg",
-      name: "Bộ Phòng Ngủ 1M8 Cổ Điển Trắng Sứ Cao Cấp GI3028-18",
-      price: "99.000.000 ₫",
-      initPrice: "120.000.000 ₫",
-    },
-    {
-      id: 2,
-      image: "category-3.1.jpg",
-      name: "Bộ Phòng Ngủ 1M8 Cổ Điển Trắng Sứ Cao Cấp GI3028-18",
-      price: "99.000.000 ₫",
-      initPrice: "120.000.000 ₫",
-    },
-    {
-      id: 3,
-      image: "category-3.1.jpg",
-      name: "Bộ Phòng Ngủ 1M8 Cổ Điển Trắng Sứ Cao Cấp GI3028-18",
-      price: "99.000.000 ₫",
-      initPrice: "120.000.000 ₫",
-    },
-    {
-      id: 4,
-      image: "category-3.1.jpg",
-      name: "Bộ Phòng Ngủ 1M8 Cổ Điển Trắng Sứ Cao Cấp GI3028-18",
-      price: "99.000.000 ₫",
-      initPrice: "120.000.000 ₫",
-    },
-  ];
-
-  const productsCate4 = [
-    {
-      id: 1,
-      image: "category-4.1.jpg",
-      name: "Bàn Ăn Gỗ Sồi Nhập Khẩu Phong Cách Tân Cổ Điển BH8311",
-      price: "19.600.000 ₫",
-      initPrice: "24.600.000 ₫",
-    },
-    {
-      id: 2,
-      image: "category-4.1.jpg",
-      name: "Bàn Ăn Gỗ Sồi Nhập Khẩu Phong Cách Tân Cổ Điển BH8311",
-      price: "19.600.000 ₫",
-      initPrice: "24.600.000 ₫",
-    },
-    {
-      id: 3,
-      image: "category-4.1.jpg",
-      name: "Bàn Ăn Gỗ Sồi Nhập Khẩu Phong Cách Tân Cổ Điển BH8311",
-      price: "19.600.000 ₫",
-      initPrice: "24.600.000 ₫",
-    },
-    {
-      id: 4,
-      image: "category-4.1.jpg",
-      name: "Bàn Ăn Gỗ Sồi Nhập Khẩu Phong Cách Tân Cổ Điển BH8311",
-      price: "19.600.000 ₫",
-      initPrice: "24.600.000 ₫",
-    },
-  ];
   return (
     <>
       <Slider />
       <div className="container">
         <ListCategory />
         <SaleProducts />
-        <HomeCategory
-          title="Nội thất tân cổ điển"
-          href="category/1"
-          reverst={false}
-          banner={categoryBanner1}
-          products={productsCate1}
-        />
+        {categories.length > 0 && productsCategory.length > 0 && (
+          <HomeCategory
+            title={`Danh mục ${categories[0]?.name}`}
+            href={`category/${categories[0]?.name}`}
+            reverst={false}
+            banner={categoryBanner1}
+            products={productsCategory[0]}
+          />
+        )}
         <Link to={"/"} className="py-[50px] block">
           <img src={homeSubBanner1} alt="home sub banner" />
         </Link>
 
-        <HomeCategory
-          title="Nội thất phòng khách"
-          href="category/1"
-          reverst={true}
-          banner={categoryBanner2}
-          products={productsCate2}
-        />
+        {categories.length > 0 && productsCategory.length > 0 && (
+          <HomeCategory
+            title={`Danh mục ${categories[1]?.name}`}
+            href={`category/${categories[1]?.name}`}
+            reverst={true}
+            banner={categoryBanner4}
+            products={productsCategory[1]}
+          />
+        )}
         <Link to={"/"} className="py-[50px] block">
           <img src={homeSubBanner2} alt="home sub banner" />
         </Link>
-
-        <HomeCategory
-          title="Nội thất phòng ngủ"
-          href="category/1"
-          reverst={false}
-          banner={categoryBanner3}
-          products={productsCate3}
-        />
+        {categories.length > 0 && productsCategory.length > 0 && (
+          <HomeCategory
+            title={`Danh mục ${categories[2]?.name}`}
+            href={`category/${categories[2]?.name}`}
+            reverst={false}
+            banner={categoryBanner3}
+            products={productsCategory[2]}
+          />
+        )}
         <Link to={"/"} className="py-[50px] block">
           <img src={homeSubBanner3} alt="home sub banner" />
         </Link>
 
-        <HomeCategory
-          title="Nội thất phòng ăn"
-          href="category/1"
-          reverst={true}
-          banner={categoryBanner4}
-          products={productsCate4}
-        />
+        {categories.length > 0 && productsCategory.length > 0 && (
+          <HomeCategory
+            title={`Danh mục ${categories[3]?.name}`}
+            href={`category/${categories[3]?.name}`}
+            reverst={true}
+            banner={categoryBanner2}
+            products={productsCategory[3]}
+          />
+        )}
         <Feedback />
         <Partner />
         <ListStaff />

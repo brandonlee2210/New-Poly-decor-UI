@@ -46,7 +46,6 @@ export const LoginProvider = ({ children }) => {
         password: password,
         email: email,
         password_confirmation: password,
-        s,
       });
 
       message.success("Đăng kí tài khoản thành công");

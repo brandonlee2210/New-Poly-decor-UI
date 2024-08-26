@@ -14,7 +14,7 @@ const Checkout = () => {
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
-  const [deliveryFee, setDeliveryFee] = useState(35000);
+  const [deliveryFee, setDeliveryFee] = useState(0);
   const [email, setEmail] = useState("");
   const [payment, setPayment] = useState("atHome");
   const [dataAddress, setDataAddress] = useState({}); // state hứng dữ liệu từ InfoUserForm gửi lên
@@ -60,8 +60,8 @@ const Checkout = () => {
           },
         }
       );
-
-      setDeliveryFee(35000);
+      console.log(`data: ${data}`);
+      setDeliveryFee(data.data.total);
     } catch (error) {
       console.log(error);
     }
@@ -292,7 +292,7 @@ const Checkout = () => {
           </div>
         </div>
         <div className="text-brown-strong">
-          <h2 className="text-2xl font-bold ">Tổng tiền giỏ hàng</h2>
+          <h2 className="text-2xl font-bold ">Tổng tiền đơn hàng</h2>
           <div className="flex items-center justify-between mt-4">
             <span>Tổng sản phẩm</span>
             <span>{totalQuantity}</span>
