@@ -8,12 +8,21 @@ import axios from "axios";
 // Create the provider component
 export const LoginProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState({});
 
   useEffect(() => {
     // get id from lcoal storage
     let id = localStorage.getItem("id");
     if (id) {
       setIsLoggedIn(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    // get userInfo from local storage
+    let userInfo = localStorage.getItem("userInfo");
+    if (userInfo) {
+      setUserInfo(JSON.parse(userInfo));
     }
   }, []);
 
@@ -26,6 +35,7 @@ export const LoginProvider = ({ children }) => {
 
       // set id to localstorage
       localStorage.setItem("id", res.data.user);
+      localStorage.setItem("userInfo", JSON.stringify(res.data.userInfo));
 
       // navigate to homepage
       message.success("Đăng nhập thành công");
@@ -46,7 +56,6 @@ export const LoginProvider = ({ children }) => {
         password: password,
         email: email,
         password_confirmation: password,
-        s,
       });
 
       message.success("Đăng kí tài khoản thành công");
@@ -63,6 +72,9 @@ export const LoginProvider = ({ children }) => {
     setIsLoggedIn(false);
     message.success("Đăng xuất thành công");
 
+    // delete carts in localStorage
+    localStorage.removeItem("carts");
+
     // navigate to login page
     setTimeout(() => {
       window.location.href = "/";
@@ -70,7 +82,9 @@ export const LoginProvider = ({ children }) => {
   };
 
   return (
-    <LoginContext.Provider value={{ isLoggedIn, login, logout, signup }}>
+    <LoginContext.Provider
+      value={{ isLoggedIn, login, logout, signup, userInfo }}
+    >
       {children}
     </LoginContext.Provider>
   );

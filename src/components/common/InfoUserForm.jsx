@@ -11,6 +11,7 @@ const InfoUserForm = (props) => {
   const [wards, setWards] = useState([]);
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
+  const [email, setEmail] = useState("");
   const [ward, setWard] = useState("");
   const [street, setStreet] = useState("");
   const id = localStorage.getItem("id");
@@ -20,7 +21,7 @@ const InfoUserForm = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/v1/auth/${id}`);
+        const res = await axios.get(`http://localhost:8000/api/v1/users/${id}`);
         const user = res.data.user;
         const namePro = provinces.find(
           (x) => x.ProvinceID == province
@@ -52,6 +53,7 @@ const InfoUserForm = (props) => {
   // Fetch provinces
   useEffect(() => {
     const getProvinces = async () => {
+      console.log("hi");
       try {
         const { data } = await axios.get(
           "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
@@ -345,6 +347,7 @@ const InfoUserForm = (props) => {
             <Input
               type="email"
               name="email"
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
               className="outline-none border border-gray-300 rounded-lg px-4 py-3 w-full placeholder:text-gray-600 text-gray-800 focus:ring-2 focus:ring-brown-strong bg-opacity-75 shadow-sm transition-all duration-300"
             />

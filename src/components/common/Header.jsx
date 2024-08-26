@@ -24,8 +24,9 @@ const Header = () => {
 
   const { carts, addCart, removeCart, whistlists } = useContext(CartContext);
 
-  const { isLoggedIn, login, logout } = useContext(LoginContext);
+  const { isLoggedIn, login, logout, userInfo } = useContext(LoginContext);
 
+  console.log("inffo", userInfo);
   const navigate = useNavigate();
 
   const [keyword, setKeyword] = useState("");
@@ -155,7 +156,7 @@ const Header = () => {
                       alt="avatar"
                     />{" "}
                   </div>
-                  Gia Khánh
+                  {userInfo?.username || "Khách hàng"}
                 </div>
               </Dropdown>
             ) : (
