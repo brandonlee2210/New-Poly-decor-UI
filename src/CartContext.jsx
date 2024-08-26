@@ -73,9 +73,13 @@ const CartProvider = ({ children }) => {
     localStorage.setItem("carts", JSON.stringify(updatedCarts));
   };
 
-  const increaseQuantity = (productId) => {
+  const increaseQuantity = (cartId, color, material) => {
     const updatedCarts = carts.map((product) => {
-      if (product._id === productId) {
+      if (
+        product._id === cartId &&
+        product.color === color &&
+        product.material === material
+      ) {
         return { ...product, quantity: product.quantity + 1 };
       }
       return product;
