@@ -130,7 +130,13 @@ const Cart = () => {
                       ring-blue-500
                       
                     "
-                        onClick={() => increaseQuantity(product._id)}
+                        onClick={() =>
+                          increaseQuantity(
+                            product._id,
+                            product.color,
+                            product.material
+                          )
+                        }
                       >
                         +
                       </button>
