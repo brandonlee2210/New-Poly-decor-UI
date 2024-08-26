@@ -16,7 +16,7 @@ const Checkout = () => {
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
-  const [deliveryFee, setDeliveryFee] = useState(35000);
+  const [deliveryFee, setDeliveryFee] = useState(0);
   const [email, setEmail] = useState("");
   const [payment, setPayment] = useState("atHome");
   const [dataAddress, setDataAddress] = useState({}); // state hứng dữ liệu từ InfoUserForm gửi lên
@@ -29,7 +29,7 @@ const Checkout = () => {
     (total, product) => total + product.price * product.quantity,
     0
   );
-  console.log(totalPrice + deliveryFee);
+  // console.log(totalPrice + deliveryFee);
 
   const finalPrice = totalPrice;
 
@@ -62,8 +62,8 @@ const Checkout = () => {
           },
         }
       );
-
-      setDeliveryFee(35000);
+      // console.log(`data: ${data}`);
+      setDeliveryFee(data.data.total);
     } catch (error) {
       console.log(error);
     }
@@ -79,6 +79,7 @@ const Checkout = () => {
           },
         }
       );
+      // console.log(data.data);
       setProvinces(data.data);
     };
 
@@ -213,7 +214,7 @@ const Checkout = () => {
 
     // Your code here to submit the form
   };
-  console.log("Tổng giá trị", finalPrice + deliveryFee);
+  // console.log("Tổng giá trị", finalPrice + deliveryFee);
 
   const handleDataChange = (data) => {
     setDataAddress(data);

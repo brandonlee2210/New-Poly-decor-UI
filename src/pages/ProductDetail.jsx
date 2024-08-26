@@ -15,7 +15,7 @@ import {
   getCommentByProductId,
   getAllVariantsProduct,
 } from "../api/api";
-import { Button, message } from "antd";
+import { Button, message, notification } from "antd";
 import moment from "moment";
 
 const colors = [
@@ -186,12 +186,20 @@ const ProductDetail = () => {
     console.log(cartData);
 
     addCart(cartData);
-    message.success(`Thêm thành công ${product.name} vào giỏ hàng`);
+    // message.success(`Thêm thành công ${product.name} vào giỏ hàng`);
+    notification.success({
+      message: "Thành công",
+      description: `Thêm thành công ${product.name} vào giỏ hàng`,
+    });
   };
 
   const addToWhistlist = () => {
     addWhistlist(product);
-    message.success(`Thêm thành công ${product.name} vào danh sách yêu thích`);
+    // message.success(`Thêm thành công ${product.name} vào danh sách yêu thích`);
+    notification.success({
+      message: "Thành công",
+      description: `Thêm thành công ${product.name} vào danh sách yêu thích`,
+    });
   };
 
   const availableColors = colorsArr.filter((color) =>

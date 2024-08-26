@@ -9,95 +9,27 @@ import axios from "axios";
 import { Pagination } from "antd";
 
 const Category = () => {
-  const productsCate = [
-    {
-      id: 1,
-      image: categoryImage1,
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 2,
-      image: categoryImage1,
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 3,
-      image: categoryImage1,
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 4,
-      image: categoryImage1,
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 5,
-      image: categoryImage1,
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 6,
-      image: categoryImage1,
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 7,
-      image: categoryImage1,
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 8,
-      image: categoryImage1,
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 9,
-      image: categoryImage1,
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-    {
-      id: 10,
-      image: categoryImage1,
-      name: "Bộ Sofa Tân Cổ Điển SF71-123",
-      price: "173.000.000 ₫",
-      initPrice: "193.000.000 ₫",
-    },
-  ];
-  const [current, setCurrent] = useState(3);
+  const [current, setCurrent] = useState(1);
   const onChange = (page) => {
-    console.log(page);
+    let fetchVariants = async () => {
+      const response = await axios.get(
+        `http://localhost:8000/api/v1/orders/variants/${name}?page=${page}`
+      );
+
+      setProducts(response.data);
+    };
+
+    fetchVariants();
     setCurrent(page);
   };
   const { name } = useParams();
   const [products, setProducts] = useState([]);
-
-  const [categoryId, setCategoryId] = useState(1);
 
   useEffect(() => {
     let fetchVariants = async () => {
       const response = await axios.get(
         "http://localhost:8000/api/v1/orders/variants/" + name
       );
-
-      console.log("response", response);
 
       setProducts(response.data);
     };
@@ -110,7 +42,7 @@ const Category = () => {
         <img src={bannerCategoryPage} alt="banner" />
       </div>
       <div className="container">
-        <div className="flex items-center justify-between mt-10">
+        {/* <div className="flex items-center justify-between mt-10">
           <h3 className="text-2xl font-bold text-brown-strong">Sắp xếp theo</h3>
           <div>
             <span className="px-3 py-1 border border-[#ccc] rounded-lg text-brown-strong font-semibold cursor-pointer duration-200 hover:text-white hover:bg-brown-light active:bg-brown-light mr-3">
@@ -120,14 +52,19 @@ const Category = () => {
               Giá giảm dần
             </span>
           </div>
-        </div>
+        </div> */}
         <div className="mt-10 grid grid-cols-2 gap-5">
-          {products.map((product, index) => (
+          {products?.data?.map((product, index) => (
             <ProductItem key={index} product={product} />
           ))}
         </div>
         <div className="flex items-center justify-center mt-10">
-          <Pagination current={current} onChange={onChange} total={5} />
+          <Pagination
+            current={current}
+            onChange={onChange}
+            pageSize={products?.pagination?.pageSize}
+            total={products.total}
+          />
         </div>
         <Feedback />
         <ListStaff />

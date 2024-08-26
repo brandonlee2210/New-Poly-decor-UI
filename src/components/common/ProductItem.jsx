@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { formatCurrency } from "../../utils";
 
 const addProductToLocalStorage = (product) => {
   let products = localStorage.getItem("carts");
@@ -11,6 +12,10 @@ const addProductToLocalStorage = (product) => {
 };
 
 const ProductItem = (props) => {
+  const [displayPrice, setDisplayPrice] = useState(0);
+  useEffect(() => {
+    setDisplayPrice(props.product.variants[0].price);
+  }, []);
   const addToCart = () => {
     addProductToLocalStorage(props.product);
   };
@@ -40,21 +45,21 @@ const ProductItem = (props) => {
         </Link>
         <div className="flex justify-between items-center">
           <p className="text-brown-strong text-xl mb-1 font-bold">
-            {props.product.price}
+            {formatCurrency(+displayPrice)}
           </p>
 
-          <div className="mb-1">
+          {/* <div className="mb-1">
             <Link to={"/"}>
               <i className="fa-solid fa-heart text-xl mr-2 text-brown-strong hover:text-red-600 duration-200"></i>
             </Link>
             <div onClick={addToCart}>
               <i className="fa-solid fa-basket-shopping text-xl text-brown-strong hover:text-brown-light"></i>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <p className="text-brown-light text-sm font-bold line-through">
-          {props.product.initPrice}
+          {formatCurrency(+displayPrice * 1.05)}
         </p>
       </div>
     </div>

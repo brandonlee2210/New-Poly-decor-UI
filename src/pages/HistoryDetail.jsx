@@ -119,7 +119,7 @@ const History = () => {
           </table>
           <div className="flex items-center justify-between mt-4">
             <Link
-              to={"/"}
+              to={"/search/empty"}
               className="text-white px-5 py-3 bg-green-500 rounded-lg text-lg font-semibold hover:opacity-70"
             >
               Tiếp tục mua hàng

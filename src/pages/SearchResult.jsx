@@ -1,56 +1,109 @@
 import React, { useEffect, useState } from "react";
 import ProductItem from "../components/common/ProductItem";
-import axios from "axios";
 import { Pagination, Slider, Select, Button } from "antd";
 import { formatCurrency } from "../utils";
 import { getProductsFiltered } from "../api/api";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const { Option } = Select;
 
 const SearchResult = () => {
   const { keyword } = useParams();
+
+  const [colors, setColors] = useState([]);
+  const [materials, setMaterials] = useState([]);
+  const [maxPrice, setMaxPrice] = useState(100000000);
+  const [variants, setVariants] = useState([]);
   const [current, setCurrent] = useState(1);
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState({
     color: null,
     material: null,
-    price: [0, 10000000],
+    price: [0, 100000000],
     limit: 4,
     page: 1,
   });
 
   const onChangePage = (page) => {
     setCurrent(page);
-    setFilters((prev) => ({ ...prev, page }));
-    let keywordFilter = keyword == "empty" ? "" : keyword;
+    const updatedFilters = { ...filters, page };
+    setFilters(updatedFilters);
+
+    const keywordFilter = keyword === "empty" ? "" : keyword;
     getProductsFiltered({
-      ...filters,
+      ...updatedFilters,
       keyword: keywordFilter,
     }).then((res) => {
-      setProducts(res.data);
-    });
-  };
-
-  const handleFilterChange = (field, value) => {
-    console.log(field, value);
-    setFilters((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleFilterSubmit = () => {
-    let keywordFilter = keyword == "empty" ? "" : keyword;
-    getProductsFiltered({ ...filters, keyword: keywordFilter }).then((res) => {
-      console.log(res);
       setProducts(res.data);
       setTotal(res.total);
     });
   };
 
   useEffect(() => {
-    let keywordFilter = keyword == "empty" ? "" : keyword;
+    const getAllVariantsColor = async () => {
+      const response = await axios.get(
+        `http://localhost:8000/api/v1/variantProducts/colors/getall`
+      );
+      setColors(response.data);
+    };
+
+    const getAllVariantsMaterial = async () => {
+      const response = await axios.get(
+        `http://localhost:8000/api/v1/variantProducts/materials/getall`
+      );
+      setMaterials(response.data);
+    };
+
+    const getAllVariant = async () => {
+      const response = await axios.get(
+        `http://localhost:8000/api/v1//variants/getall/productnopagination`
+      );
+      setVariants(response.data);
+    };
+
+    getAllVariantsColor();
+    getAllVariantsMaterial();
+    getAllVariant();
+  }, []);
+
+  useEffect(() => {
+    if (variants.length > 0) {
+      let max = 0;
+      variants.forEach((product) => {
+        product.variants.forEach((variant) => {
+          if (+variant.price > max) {
+            max = +variant.price;
+          }
+        });
+      });
+      setMaxPrice(max);
+    }
+  }, [variants]);
+
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      price: [0, maxPrice],
+    }));
+  }, [maxPrice]);
+
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleFilterSubmit = () => {
+    let keywordFilter = keyword === "empty" ? "" : keyword;
     getProductsFiltered({ ...filters, keyword: keywordFilter }).then((res) => {
-      console.log(res);
+      setProducts(res.data);
+      setTotal(res.total);
+    });
+  };
+
+  useEffect(() => {
+    let keywordFilter = keyword === "empty" ? "" : keyword;
+    getProductsFiltered({ ...filters, keyword: keywordFilter }).then((res) => {
       setProducts(res.data);
       setTotal(res.total);
     });
@@ -68,13 +121,12 @@ const SearchResult = () => {
               onChange={(value) => handleFilterChange("color", value)}
               allowClear={true}
             >
-              <Option value="color1">Nâu lạnh</Option>
-              <Option value="color2">Nâu nhạt</Option>
-              <Option value="color3">Xanh nhạt</Option>
-              <Option value="color4">Xanh ô liu</Option>
-              <Option value="color5">Trắng sứ</Option>
-              <Option value="color6">Trắng ngà</Option>
-              {/* Add more options as needed */}
+              {colors.length > 0 &&
+                colors.map((color, index) => (
+                  <Option key={index} value={color.variantProductName}>
+                    {color.variantProductName}
+                  </Option>
+                ))}
             </Select>
           </div>
           <div className="mb-4">
@@ -85,13 +137,12 @@ const SearchResult = () => {
               onChange={(value) => handleFilterChange("material", value)}
               allowClear={true}
             >
-              <Option value="material1">Gỗ sồi</Option>
-              <Option value="material2">Gỗ thông</Option>
-              <Option value="material3">Da bò Úc</Option>
-              <Option value="material4">Da bò Mỹ</Option>
-              <Option value="material5">Kính thường</Option>
-              <Option value="material6">Kính cường lực</Option>
-              {/* Add more options as needed */}
+              {materials.length > 0 &&
+                materials.map((material, index) => (
+                  <Option key={index} value={material.variantProductName}>
+                    {material.variantProductName}
+                  </Option>
+                ))}
             </Select>
           </div>
           <div className="mb-4">
@@ -99,8 +150,8 @@ const SearchResult = () => {
             <Slider
               range
               min={0}
-              max={10000000}
-              defaultValue={filters.price}
+              max={maxPrice}
+              value={filters.price}
               onChange={(value) => handleFilterChange("price", value)}
               tipFormatter={null}
             />
@@ -114,19 +165,26 @@ const SearchResult = () => {
           </Button>
         </div>
         <div className="">
+          {products.length === 0 && (
+            <div className="text-5xl text-brown-strong font-bold text-center">
+              Không có sản phẩm nào
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-5">
             {products.map((product, index) => (
               <ProductItem key={index} product={product} />
             ))}
           </div>
-          <div className="flex items-center justify-center mt-5">
-            <Pagination
-              current={current}
-              onChange={onChangePage}
-              pageSize={filters.limit}
-              total={total}
-            />
-          </div>
+          {products.length > 0 && (
+            <div className="flex items-center justify-center mt-5">
+              <Pagination
+                current={current}
+                onChange={onChangePage}
+                pageSize={filters.limit}
+                total={total}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
