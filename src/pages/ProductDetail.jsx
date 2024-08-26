@@ -153,22 +153,18 @@ const ProductDetail = () => {
   };
 
   const addToCart = () => {
-    let newQuantity = quantity;
+    let newQuantity = +quantity;
     // check if the variant in cart plus current quantity is greater than the quantity in stock
-    let existingItem = carts
-      .find(
-        (cart) =>
-          cart.id === product.id &&
-          cart.color === activeColor &&
-          cart.material === material
-      )
-      ?.variants.find(
-        (variant) =>
-          variant.color === activeColor && variant.material === material
-      );
+    let existingItem = carts.find(
+      (cart) =>
+        cart.id === product.id &&
+        cart.color === activeColor &&
+        cart.material === material
+    )?.quantity;
 
     if (existingItem) {
-      newQuantity += +existingItem.quantity;
+      newQuantity += +existingItem;
+      console.log(carts);
     }
 
     if (newQuantity > variant.quantity) {
@@ -184,8 +180,10 @@ const ProductDetail = () => {
       material,
       color: activeColor,
       price: variant.price,
-      quantity: newQuantity, // Thêm số lượng vào dữ liệu giỏ hàng
+      quantity: +quantity, // Thêm số lượng vào dữ liệu giỏ hàng
     };
+
+    console.log(cartData);
 
     addCart(cartData);
     message.success(`Thêm thành công ${product.name} vào giỏ hàng`);

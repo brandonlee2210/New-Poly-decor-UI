@@ -26,7 +26,7 @@ const Cart = () => {
   const finalPrice = totalPrice;
 
   const handleCheckout = () => {
-    // Implement your checkout logic here
+    // Implement your checkout logic herie
     // Example: Redirect to payment gateway or show success message
     if (!isLoggedIn) {
       message.info("Vui lòng đăng nhập để tiến hành đặt hàng!");
