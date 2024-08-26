@@ -3,10 +3,12 @@ import React, { useEffect, useState, useContext } from "react";
 import vnpay from "../assets/images/VNPAY.webp";
 import InfoUserForm from "../components/common/InfoUserForm";
 import { CartContext } from "../CartContext";
+import { LoginContext } from "../LoginContext";
 import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
   const { carts, addCart, removeCart, removeAll } = useContext(CartContext);
+  const { isLoggedIn, login, logout, userInfo } = useContext(LoginContext);
   const navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -166,9 +168,14 @@ const Checkout = () => {
 
     let orderDataSave = {
       orderData: {
-        address: address,
+        address: dataAddress,
         total: totalPrice + deliveryFee,
-        userID: "60d5ec49f8d2c72b8c8e4b8b",
+        email: dataAddress.email,
+        userID: userInfo._id,
+        paymentMethod: payment,
+        status: 1,
+        date: new Date(),
+        orderDetailsData,
       },
       orderDetailsData,
     };

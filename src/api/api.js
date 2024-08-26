@@ -126,6 +126,7 @@ export const createReview = async (data) => {
 };
 
 export const getProductById = async (id) => {
+  console.log(id);
   try {
     const response = await axios.get(
       `http://localhost:8000/api/v1/variants/${id}`

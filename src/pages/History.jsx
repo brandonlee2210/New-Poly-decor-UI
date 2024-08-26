@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { CartContext } from "../CartContext";
+import { LoginContext } from "../LoginContext";
 import { Link } from "react-router-dom";
 import { Modal } from "antd";
 
 const History = () => {
   const [orders, setOrders] = useState([]);
   const { carts, addCart, removeCart } = useContext(CartContext);
+  const { userInfo } = useContext(LoginContext);
 
   const isOrdersEmpty = orders.length === 0;
 
@@ -17,12 +19,14 @@ const History = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       let response = await axios.get(
-        "http://localhost:8000/api/v1/ordersByUser/669f63c0a71e0102f6be60a6"
+        "http://localhost:8000/api/v1/ordersByUser/" + userInfo._id
       );
       setOrders(response.data);
+      console.log("res", response.data);
+      
     };
     fetchOrders();
-  }, []);
+  }, [userInfo._id]);
 
   const orderStatus = {
     1: "Chờ xác nhận",
@@ -37,10 +41,12 @@ const History = () => {
     2: "#1890FF",
     3: "#2F5496",
     4: "#F5222D",
-    5: "#2F5496",
+    5: "#28a745"
   };
 
   const getOrderAndColorStatus = (status) => {
+    console.log(status);
+    
     return { status: orderStatus[status], color: colorOrderStatus[status] };
   };
 
@@ -119,6 +125,7 @@ const History = () => {
                   </td>
                   {/* Custom button status */}
                   <td className="text-brown-strong p-3 text-lg font-semibold">
+                    
                     <div
                       className="text-white w-[160px] items-center justify-center px-3 py-1 rounded-lg"
                       style={{

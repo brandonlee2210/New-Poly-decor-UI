@@ -97,7 +97,7 @@ const ProductDetail = () => {
         .map((x) => x.variantProductName);
 
       setColors(colors);
-      setActiveColor(colors[0].value);
+
       setMaterials(materials);
     });
   }, []);
@@ -106,6 +106,7 @@ const ProductDetail = () => {
     getProductById(id).then((res) => {
       setProduct(res);
       setVariants(res.variants);
+      setActiveColor(res.variants[0].color);
       setVariant(res.variants[0]);
     });
   }, [id]);
@@ -118,13 +119,10 @@ const ProductDetail = () => {
   // }, [id]);
 
   const handleVariantChange = (color, material) => {
-    console.log(color, material);
     setActiveColor(color);
 
     if (!material) {
       let variantHasColor = variants.find((variant) => variant.color === color);
-
-      console.log(variantHasColor, "hasColor");
 
       if (variantHasColor) {
         setVariant(variantHasColor);
@@ -154,18 +152,40 @@ const ProductDetail = () => {
   };
 
   const addToCart = () => {
-    if (quantity > variant.quantity) {
-      message.error("Bạn đã đặt quá số lượng sản phẩm trong kho");
+    let newQuantity = quantity;
+    // check if the variant in cart plus current quantity is greater than the quantity in stock
+    let existingItem = carts
+      .find(
+        (cart) =>
+          cart.id === product.id &&
+          cart.color === activeColor &&
+          cart.material === material
+      )
+      ?.variants.find(
+        (variant) =>
+          variant.color === activeColor && variant.material === material
+      );
+
+    if (existingItem) {
+      newQuantity += +existingItem.quantity;
+    }
+
+    if (newQuantity > variant.quantity) {
+      message.error(
+        "Số lượng sản phẩm trong giỏ hàng vượt quá số lượng trong kho"
+      );
       return;
     }
+    // check if the variant in cart plus current quantity is greater than the quantity in stock
 
     let cartData = {
       ...product,
       material,
       color: activeColor,
       price: variant.price,
-      quantity, // Thêm số lượng vào dữ liệu giỏ hàng
+      quantity: newQuantity, // Thêm số lượng vào dữ liệu giỏ hàng
     };
+
     addCart(cartData);
     message.success(`Thêm thành công ${product.name} vào giỏ hàng`);
   };

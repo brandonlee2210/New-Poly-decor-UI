@@ -16,6 +16,10 @@ const LoginPage = () => {
       message.error(`Vui lòng nhập tên đăng nhập`);
       return;
     }
+    if (!email){
+      message.error("Vui lòng nhập email");
+      return
+    }
 
     if (!password) {
       message.error(`Vui lòng nhập mật khẩu`);
@@ -29,6 +33,8 @@ const LoginPage = () => {
     }
 
     const response = await signup(username, password, email);
+    console.log(response);
+    
   };
 
   return (
@@ -112,7 +118,7 @@ const LoginPage = () => {
                 type="submit"
                 className="w-full text-white bg-brown-strong hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               >
-                Đăng nhập
+                Đăng kí
               </button>
             </form>
             {isLoggedIn && <p>You are logged in!</p>}
