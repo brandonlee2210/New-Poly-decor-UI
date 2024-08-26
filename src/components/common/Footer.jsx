@@ -166,13 +166,13 @@ const Footer = () => {
         Copyright © 2022 - 2024 polydecor.com.
       </div>
       <div>
-        <Link
+        {/* <Link
           to={"https://www.facebook.com/profile.php?id=61565207841620"}
           target="_blank"
           className="inline-block w-[50px] h-[50px] fixed top-[50%] right-0 -translate-y-[51%] mr-3"
         >
           <img src={zaloImage} alt="zalo icon" />
-        </Link>
+        </Link> */}
         <Link
           to={"https://www.facebook.com/profile.php?id=61565207841620"}
           target="_blank"
@@ -181,7 +181,16 @@ const Footer = () => {
           <img src={messImage} alt="mess icon" />
         </Link>
       </div>
-      <FloatButton.BackTop />
+
+      <df-messenger
+        intent="WELCOME"
+        chat-title="Poly-Decor_AI_Chat"
+        agent-id="9f934fae-1325-47f9-bdfa-2a0b949b9290"
+        language-code="vi"
+      ></df-messenger>
+      <div className="mb-10">
+        <FloatButton.BackTop />
+      </div>
     </>
   );
 };

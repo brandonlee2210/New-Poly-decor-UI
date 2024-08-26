@@ -28,13 +28,16 @@ const SearchResult = () => {
 
   const onChangePage = (page) => {
     setCurrent(page);
-    setFilters((prev) => ({ ...prev, page }));
-    let keywordFilter = keyword === "empty" ? "" : keyword;
+    const updatedFilters = { ...filters, page };
+    setFilters(updatedFilters);
+
+    const keywordFilter = keyword === "empty" ? "" : keyword;
     getProductsFiltered({
-      ...filters,
+      ...updatedFilters,
       keyword: keywordFilter,
     }).then((res) => {
       setProducts(res.data);
+      setTotal(res.total);
     });
   };
 

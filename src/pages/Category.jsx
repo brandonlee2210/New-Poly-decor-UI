@@ -42,7 +42,7 @@ const Category = () => {
         <img src={bannerCategoryPage} alt="banner" />
       </div>
       <div className="container">
-        <div className="flex items-center justify-between mt-10">
+        {/* <div className="flex items-center justify-between mt-10">
           <h3 className="text-2xl font-bold text-brown-strong">Sắp xếp theo</h3>
           <div>
             <span className="px-3 py-1 border border-[#ccc] rounded-lg text-brown-strong font-semibold cursor-pointer duration-200 hover:text-white hover:bg-brown-light active:bg-brown-light mr-3">
@@ -52,7 +52,7 @@ const Category = () => {
               Giá giảm dần
             </span>
           </div>
-        </div>
+        </div> */}
         <div className="mt-10 grid grid-cols-2 gap-5">
           {products?.data?.map((product, index) => (
             <ProductItem key={index} product={product} />

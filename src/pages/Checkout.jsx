@@ -29,7 +29,7 @@ const Checkout = () => {
     (total, product) => total + product.price * product.quantity,
     0
   );
-  console.log(totalPrice + deliveryFee);
+  // console.log(totalPrice + deliveryFee);
 
   const finalPrice = totalPrice;
 
@@ -62,7 +62,7 @@ const Checkout = () => {
           },
         }
       );
-      console.log(`data: ${data}`);
+      // console.log(`data: ${data}`);
       setDeliveryFee(data.data.total);
     } catch (error) {
       console.log(error);
@@ -79,6 +79,7 @@ const Checkout = () => {
           },
         }
       );
+      // console.log(data.data);
       setProvinces(data.data);
     };
 
@@ -96,6 +97,7 @@ const Checkout = () => {
         },
       }
     );
+    console.log(data.data);
     setDistricts(data.data);
   };
 
@@ -213,7 +215,7 @@ const Checkout = () => {
 
     // Your code here to submit the form
   };
-  console.log("Tổng giá trị", finalPrice + deliveryFee);
+  // console.log("Tổng giá trị", finalPrice + deliveryFee);
 
   const handleDataChange = (data) => {
     setDataAddress(data);
