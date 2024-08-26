@@ -168,7 +168,7 @@ const Checkout = () => {
 
     let orderDataSave = {
       orderData: {
-        address: address,
+        address: dataAddress,
         total: totalPrice + deliveryFee,
         email: dataAddress.email,
         userID: userInfo._id,
@@ -302,7 +302,7 @@ const Checkout = () => {
           </div>
         </div>
         <div className="text-brown-strong">
-          <h2 className="text-2xl font-bold ">Tổng tiền giỏ hàng</h2>
+          <h2 className="text-2xl font-bold ">Tổng tiền đơn hàng</h2>
           <div className="flex items-center justify-between mt-4">
             <span>Tổng sản phẩm</span>
             <span>{totalQuantity}</span>

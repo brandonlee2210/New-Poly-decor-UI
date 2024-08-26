@@ -22,6 +22,8 @@ const History = () => {
         "http://localhost:8000/api/v1/ordersByUser/" + userInfo._id
       );
       setOrders(response.data);
+      console.log("res", response.data);
+      
     };
     fetchOrders();
   }, [userInfo._id]);
@@ -39,10 +41,12 @@ const History = () => {
     2: "#1890FF",
     3: "#2F5496",
     4: "#F5222D",
-    5: "#2F5496",
+    5: "#28a745"
   };
 
   const getOrderAndColorStatus = (status) => {
+    console.log(status);
+    
     return { status: orderStatus[status], color: colorOrderStatus[status] };
   };
 
@@ -121,6 +125,7 @@ const History = () => {
                   </td>
                   {/* Custom button status */}
                   <td className="text-brown-strong p-3 text-lg font-semibold">
+                    
                     <div
                       className="text-white w-[160px] items-center justify-center px-3 py-1 rounded-lg"
                       style={{

@@ -80,7 +80,7 @@ const Cart = () => {
                 <tr key={index} className="border-b border-brown-strong">
                   <td className="text-brown-strong p-3 align-middle flex items-center gap-3 max-w-[520px]">
                     <img
-                      src={`/src/assets/images/${product.image}`}
+                      src={`${product.image}`}
                       alt="product image"
                       className="w-[200px]"
                       onClick={() => handleOnClickImg(product._id)}
@@ -98,6 +98,7 @@ const Cart = () => {
                     </div>
                   </td>
                   <td className="text-brown-strong p-3 align-middle">
+                  
                     <div className="flex gap-2">
                       <button
                         className=" 

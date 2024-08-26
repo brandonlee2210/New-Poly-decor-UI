@@ -1,6 +1,5 @@
 import { Form, Input, Select, Button, message } from "antd";
 import axios from "axios";
-
 import React, { useEffect, useState } from "react";
 
 const { Option } = Select;
@@ -14,46 +13,14 @@ const InfoUserForm = (props) => {
   const [email, setEmail] = useState("");
   const [ward, setWard] = useState("");
   const [street, setStreet] = useState("");
+
   const id = localStorage.getItem("id");
 
   const [form] = Form.useForm();
 
+  // Fetch provinces once at the start
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(`http://localhost:8000/api/v1/users/${id}`);
-        const user = res.data.user;
-        const namePro = provinces.find(
-          (x) => x.ProvinceID == province
-        )?.ProvinceName;
-        const nameDis = districts.find(
-          (f) => f.DistrictID == district
-        )?.DistrictName;
-        form.setFieldsValue({
-          fullName: user?.fullName || "Gia Bảo",
-          phoneNumber: user?.phoneNumber || "0123456789",
-          email: user.email || "",
-          province: namePro || user.province,
-          district: nameDis || user.district,
-          ward: user.ward,
-          street: user.street,
-        });
-
-        setProvince(user.province);
-        setDistrict(user.district);
-        setWard(user.ward);
-
-        setStreet(user.street);
-      } catch (error) {
-        console.log("Failed to fetch data:", error);
-      }
-    };
-    fetchData();
-  }, [form, id, provinces, districts, wards, province, district, ward]);
-  // Fetch provinces
-  useEffect(() => {
-    const getProvinces = async () => {
-      console.log("hi");
+    const fetchProvinces = async () => {
       try {
         const { data } = await axios.get(
           "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
@@ -68,12 +35,41 @@ const InfoUserForm = (props) => {
         console.error("Failed to fetch provinces:", error);
       }
     };
-    getProvinces();
+    fetchProvinces();
   }, []);
 
+  // Fetch user's data and set form fields
   useEffect(() => {
-    const getDistricts = async () => {
-      if (province) {
+    const fetchUserData = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8000/api/v1/auth/${id}`);
+        const user = res.data.user;
+
+        setProvince(user.province);
+        setDistrict(user.district);
+        setWard(user.ward);
+        setStreet(user.street);
+
+        form.setFieldsValue({
+          fullName: user.fullName,
+          phoneNumber: user.phoneNumber,
+          email: user.email,
+          province: user.province,
+          district: user.district,
+          ward: user.ward,
+          street: user.street,
+        });
+      } catch (error) {
+        console.log("Failed to fetch data:", error);
+      }
+    };
+    fetchUserData();
+  }, [form, id]);
+
+  // Fetch districts when the province is set (including initial user province)
+  useEffect(() => {
+    if (province) {
+      const fetchDistricts = async () => {
         try {
           const { data } = await axios.get(
             "https://online-gateway.ghn.vn/shiip/public-api/master-data/district",
@@ -84,18 +80,20 @@ const InfoUserForm = (props) => {
               },
             }
           );
+
           setDistricts(data.data);
         } catch (error) {
           console.error("Failed to fetch districts:", error);
         }
-      }
-    };
-    getDistricts();
+      };
+      fetchDistricts();
+    }
   }, [province]);
 
+  // Fetch wards when the district is set (including initial user district)
   useEffect(() => {
-    const getWards = async () => {
-      if (district) {
+    if (district) {
+      const fetchWards = async () => {
         try {
           const { data } = await axios.get(
             "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward",
@@ -110,9 +108,9 @@ const InfoUserForm = (props) => {
         } catch (error) {
           console.error("Failed to fetch wards:", error);
         }
-      }
-    };
-    getWards();
+      };
+      fetchWards();
+    }
   }, [district]);
 
   useEffect(() => {
@@ -131,51 +129,15 @@ const InfoUserForm = (props) => {
       }
     }
   }, [province, district, ward, props, provinces, districts, wards]);
-
-  const handleGetDistricts = async (provinceId) => {
+  const handleGetDistricts = (provinceId) => {
     setProvince(provinceId);
     setDistrict(""); // Reset district and ward when province changes
     setWard("");
-    if (provinceId) {
-      try {
-        const { data } = await axios.get(
-          "https://online-gateway.ghn.vn/shiip/public-api/master-data/district",
-          {
-            params: { province_id: provinceId },
-            headers: {
-              token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
-            },
-          }
-        );
-        console.log(data.data);
-
-        setDistricts(data.data);
-      } catch (error) {
-        console.error("Failed to fetch districts:", error);
-      }
-    }
   };
 
-  const handleGetWards = async (districtId) => {
+  const handleGetWards = (districtId) => {
     setDistrict(districtId);
     setWard("");
-
-    if (districtId) {
-      try {
-        const { data } = await axios.get(
-          "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward",
-          {
-            params: { district_id: districtId },
-            headers: {
-              token: "b10e4bc9-3789-11ef-8f55-4ee3d82283af",
-            },
-          }
-        );
-        setWards(data.data);
-      } catch (error) {
-        console.error("Failed to fetch wards:", error);
-      }
-    }
   };
 
   const handleSubmit = async (values) => {
@@ -199,10 +161,12 @@ const InfoUserForm = (props) => {
   };
 
   const display = props.type === "checkout" ? "none" : "flex";
-  const backgroud = props.type === "checkout" ? "bg-[#FFF]" : "bg-[#DDB671]";
+  const background = props.type === "checkout" ? "bg-[#FFF]" : "bg-[#DDB671]";
   const minHeight = props.type === "checkout" ? "" : "min-h-[750px]";
+  const namePro = provinces.find((prov) => prov.ProvinceID == province)?.ProvinceID
+console.log(namePro);
 
-  const tittle =
+  const title =
     props.type === "checkout" ? (
       ""
     ) : (
@@ -219,7 +183,7 @@ const InfoUserForm = (props) => {
         <Button
           type="primary"
           htmlType="submit"
-          className="bg-brown-strong text-white px-8 py-4 font-bold rounded-lg shadow-md hover:bg-brown-dark transition-colors duration-300"
+          className="bg-brown-strong text-white px-8 py-4 font-bold rounded-lg shadow-md  transition-colors duration-300"
         >
           Xác nhận
         </Button>
@@ -231,10 +195,10 @@ const InfoUserForm = (props) => {
       <Form
         form={form}
         onFinish={handleSubmit}
-        className={`max-w-3xl w-full ${backgroud} p-10 rounded-lg shadow-lg border border-gray-300`}
+        className={`max-w-3xl w-full ${background} p-10 rounded-lg shadow-lg border border-gray-300`}
         style={{ backgroundImage: "url('/path-to-your-furniture-bg.jpg')" }}
       >
-        {tittle}
+        {title}
 
         <div className="grid grid-cols-2 gap-4">
           <Form.Item
@@ -262,20 +226,17 @@ const InfoUserForm = (props) => {
               className="outline-none border border-gray-300 rounded-lg px-4 py-3 w-full placeholder:text-gray-600 text-gray-800 focus:ring-2 focus:ring-brown-strong bg-opacity-75 shadow-sm transition-all duration-300"
             />
           </Form.Item>
-        </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Form.Item
-            name="province"
-            rules={[
-              { required: true, message: "Vui lòng chọn Tỉnh/Thành phố." },
-            ]}
-          >
+          <Form.Item name="province">
             <Select
-              onChange={handleGetDistricts}
               placeholder="Tỉnh/Thành phố"
-              className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-brown-strong"
-              style={{ height: "48px" }}
+              value={
+                provinces.find((prov) => prov.ProvinceID == province)
+                  ?.ProvinceID
+              }
+              onChange={handleGetDistricts}
+              className="w-full"
+              style={{height: "48px"}}
             >
               {provinces.map((prov) => (
                 <Option key={prov.ProvinceID} value={prov.ProvinceID}>
@@ -284,58 +245,53 @@ const InfoUserForm = (props) => {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item
-            name="district"
-            rules={[{ required: true, message: "Vui lòng chọn Quận/Huyện." }]}
-          >
+
+          <Form.Item name="district">
             <Select
-              onChange={handleGetWards}
               placeholder="Quận/Huyện"
-              className="w-full border border-gray-300 rounded-lg  focus:ring-2 focus:ring-brown-strong"
-              disabled={!province}
-              style={{ height: "48px" }}
+              value={district}
+              onChange={handleGetWards}
+              style={{height: "48px"}}
+              className="w-full"
             >
               {districts.map((dist) => (
-                <Option key={dist.DistrictID} value={dist.DistrictID}>
+                <Option key={dist?.DistrictID} value={dist.DistrictID}>
                   {dist.DistrictName}
                 </Option>
               ))}
             </Select>
           </Form.Item>
-        </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Form.Item
-            name="ward"
-            rules={[{ required: true, message: "Vui lòng chọn Phường/Xã." }]}
-          >
+          <Form.Item name="ward">
             <Select
-              onChange={(value) => setWard(value)}
               placeholder="Phường/Xã"
-              className="w-full border border-gray-300 rounded-lg  focus:ring-2 focus:ring-brown-strong"
-              disabled={!district}
-              style={{ height: "48px" }}
+              value={ward}
+              onChange={(value) => setWard(value)}
+              className="w-full"
+              style={{height: "48px"}}
             >
-              {wards?.map((ward) => (
-                <Option key={ward.WardCode} value={ward.WardCode}>
-                  {ward.WardName}
+              {wards.map((wardObj) => (
+                <Option key={wardObj.WardCode} value={wardObj.WardCode}>
+                  {wardObj.WardName}
                 </Option>
               ))}
             </Select>
           </Form.Item>
+
           <Form.Item
             name="street"
-            rules={[{ required: true, message: "Vui lòng nhập tên đường." }]}
+            rules={[{ required: true, message: "Vui lòng nhập địa chỉ." }]}
           >
             <Input
               type="text"
               name="street"
-              placeholder="Tên đường"
+              placeholder="Đường/Phố"
               className="outline-none border border-gray-300 rounded-lg px-4 py-3 w-full placeholder:text-gray-600 text-gray-800 focus:ring-2 focus:ring-brown-strong bg-opacity-75 shadow-sm transition-all duration-300"
+              value={street}
+              onChange={(e) => setStreet(e.target.value)}
             />
           </Form.Item>
         </div>
-
         <div className="grid grid-cols-1">
           <Form.Item
             name="email"
@@ -353,7 +309,6 @@ const InfoUserForm = (props) => {
             />
           </Form.Item>
         </div>
-
         {btnConfirm}
       </Form>
     </div>

@@ -70,6 +70,7 @@ const commentFake = [
 
 const ProductComment = ({ id }) => {
   const [comments, setComments] = useState([]);
+  const idUser = localStorage.getItem("id");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,22 +110,24 @@ const ProductComment = ({ id }) => {
   return (
     <>
       {comments.length > 0 && <CommentList comments={comments} />}
-      <Comment
-        avatar={
-          <Avatar
-            src="https://randomuser.me/api/portraits/men/32.jpg"
-            alt="User Name"
-          />
-        }
-        content={
-          <Editor
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            submitting={submitting}
-            value={value}
-          />
-        }
-      />
+      {idUser && (
+        <Comment
+          avatar={
+            <Avatar
+              src="https://randomuser.me/api/portraits/men/32.jpg"
+              alt="User Name"
+            />
+          }
+          content={
+            <Editor
+              onChange={handleChange}
+              onSubmit={handleSubmit}
+              submitting={submitting}
+              value={value}
+            />
+          }
+        />
+      )}
     </>
   );
 };

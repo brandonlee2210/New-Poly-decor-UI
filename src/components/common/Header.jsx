@@ -5,6 +5,7 @@ import { Dropdown } from "antd";
 import { CartContext } from "../../CartContext";
 import { LoginContext } from "../../LoginContext";
 import { useNavigate } from "react-router-dom";
+import amdin from "../../assets/images/8fc6b76e48a8a8ab33246dc94c8fecf6.webp";
 import axios from "axios";
 
 const loginItems = [
@@ -21,12 +22,11 @@ const loginItems = [
 const Header = () => {
   const [logged, setLogged] = useState(false);
   const [categories, setCategories] = useState([]);
-
+  const [user, setUser] = useState({});
   const { carts, addCart, removeCart, whistlists } = useContext(CartContext);
 
   const { isLoggedIn, login, logout, userInfo } = useContext(LoginContext);
-
-  console.log("inffo", userInfo);
+  const id = localStorage.getItem("id");
   const navigate = useNavigate();
 
   const [keyword, setKeyword] = useState("");
@@ -34,7 +34,15 @@ const Header = () => {
   const handleLogout = () => {
     logout();
   };
+  const getUserId = async () => {
+    const res = await axios.get(`http://localhost:8000/api/v1/auth/${id}`);
+    setUser( res.data.user);
+  };
+  useEffect(()=>{
+    getUserId()
+  },[])
 
+  
   const loggedItems = [
     {
       key: "1",
@@ -44,8 +52,12 @@ const Header = () => {
       key: "2",
       label: <span onClick={handleLogout}>Đăng xuất</span>,
     },
+    {
+      key: "3",
+      label: <Link to={"/forgot"}>Đổi mật khẩu</Link>,
+    }
   ];
-
+ 
   const handleSearch = (e) => {
     e.preventDefault();
     // navigate to router <Route path="search/:keyword" element={<SearchResult />} />
@@ -151,10 +163,7 @@ const Header = () => {
               >
                 <div className="text-brown-strong flex items-center gap-1">
                   <div className="h-9 w-9 overflow-hidden rounded-full flex items-center">
-                    <img
-                      src="https://pbs.twimg.com/media/FoUoGo3XsAMEPFr?format=jpg&name=4096x4096"
-                      alt="avatar"
-                    />{" "}
+                    <img src={amdin} alt="avatar" />{" "}
                   </div>
                   {userInfo?.username || "Khách hàng"}
                 </div>

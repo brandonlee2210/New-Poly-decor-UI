@@ -16,6 +16,10 @@ const LoginPage = () => {
       message.error(`Vui lòng nhập tên đăng nhập`);
       return;
     }
+    if (!email){
+      message.error("Vui lòng nhập email");
+      return
+    }
 
     if (!password) {
       message.error(`Vui lòng nhập mật khẩu`);
@@ -29,6 +33,8 @@ const LoginPage = () => {
     }
 
     const response = await signup(username, password, email);
+    console.log(response);
+    
   };
 
   return (

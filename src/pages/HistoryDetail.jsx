@@ -6,12 +6,14 @@ import { getOrderDetails } from "../api/api";
 import { useParams } from "react-router-dom";
 
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const History = () => {
   const { carts, addCart, removeCart } = useContext(CartContext);
 
   const [orders, setOrders] = useState([]);
   const [orderDetails, setOrderDetails] = useState([]);
+  const [statusOrder, setStatusOrder] = useState({});
   const { id } = useParams();
 
   const isCartEmpty = orderDetails.length === 0;
@@ -26,6 +28,19 @@ const History = () => {
       setOrderDetails(res.data);
     });
   }, [id]);
+  useEffect(() => {
+    const fetchOrders = async () => {
+      let response = await axios.get(
+        "http://localhost:8000/api/v1/ordersByUser/669f63c0a71e0102f6be60a6"
+      );
+      console.log(response.data);
+
+      const statusOder = response.data.find((item) => item._id === id);
+      setStatusOrder(statusOder);
+    };
+    fetchOrders();
+  }, []);
+  console.log(statusOrder);
 
   return (
     <div className="container2 grid grid-cols-[3fr_1fr] gap-5 mt-16">
@@ -58,6 +73,7 @@ const History = () => {
               {orderDetails.map((product, index) => (
                 <tr key={index} className="border-b border-brown-strong">
                   <td className="text-brown-strong p-3 align-middle flex items-center gap-3 max-w-[520px]">
+                    {console.log(product.image)}
                     <img
                       src={`${product.image}`}
                       alt="product image"
@@ -88,12 +104,14 @@ const History = () => {
                     ></i>
                   </td>
                   <td className="text-brown-strong p-3 text-xl hover:text-red-600 cursor-pointer">
-                    <Link
-                      to={`/reviews/${product._id}`}
-                      className="text-white px-5 py-3 bg-yellow-500 rounded-lg text-lg font-semibold hover:opacity-70"
-                    >
-                      Đánh giá
-                    </Link>
+                    {statusOrder.status === 5 && (
+                      <Link
+                        to={`/reviews/${product._id}`}
+                        className="text-white px-5 py-3 bg-yellow-500 rounded-lg text-lg font-semibold hover:opacity-70"
+                      >
+                        Đánh giá
+                      </Link>
+                    )}
                   </td>
                 </tr>
               ))}

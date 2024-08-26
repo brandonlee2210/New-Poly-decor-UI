@@ -95,9 +95,9 @@ const ProductDetail = () => {
       const materials = res
         ?.filter((v) => v.variantProductType === "material")
         .map((x) => x.variantProductName);
-
+      
       setColors(colors);
-      setActiveColor(colors[0].value);
+      
       setMaterials(materials);
     });
   }, []);
@@ -106,6 +106,7 @@ const ProductDetail = () => {
     getProductById(id).then((res) => {
       setProduct(res);
       setVariants(res.variants);
+      setActiveColor(res.variants[0].color);
       setVariant(res.variants[0]);
     });
   }, [id]);
@@ -118,13 +119,11 @@ const ProductDetail = () => {
   // }, [id]);
 
   const handleVariantChange = (color, material) => {
-    console.log(color, material);
     setActiveColor(color);
 
     if (!material) {
       let variantHasColor = variants.find((variant) => variant.color === color);
 
-      console.log(variantHasColor, "hasColor");
 
       if (variantHasColor) {
         setVariant(variantHasColor);
@@ -154,7 +153,8 @@ const ProductDetail = () => {
   };
 
   const addToCart = () => {
-    if (quantity > variant.quantity) {
+    
+    if (quantity > +variant.quantity) {
       message.error("Bạn đã đặt quá số lượng sản phẩm trong kho");
       return;
     }
@@ -178,8 +178,6 @@ const ProductDetail = () => {
   const availableColors = colorsArr.filter((color) =>
     variants.some((variant) => variant.color === color.value)
   );
-
-  console.log("color", activeColor);
 
   const availableMaterials = variants
     .filter((variant) => variant.color === activeColor)

@@ -5,6 +5,7 @@ import "./Review.css"; // Import the CSS file
 import { useParams } from "react-router-dom";
 
 import { createReview, getProductById } from "../api/api";
+import { message } from "antd";
 
 const StarRating = ({ rating, onRatingChange }) => {
   const handleClick = (value) => {
@@ -36,9 +37,12 @@ const ProductDetail = () => {
   const [product, setProduct] = useState({});
 
   const { id } = useParams();
-
+   console.log(id);
+   
   useEffect(() => {
     getProductById(id).then((res) => {
+      console.log(res);
+      
       setProduct(res);
     });
   }, []);
@@ -141,6 +145,9 @@ const Review = () => {
 
     // Call the createReview API with the review object
     createReview(review).then((response) => {
+      if (response) {
+        message.success("Đánh giá thành công");
+      }
       console.log("Review submitted:", response);
     });
   };
