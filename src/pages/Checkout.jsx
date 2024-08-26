@@ -148,8 +148,7 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(dataAddress);
-    return;
+
     let address = `Tỉnh ${
       provinces.find((x) => x.ProvinceID == province)?.ProvinceName
     }, ${districts.find((x) => x.DistrictID == district)?.DistrictName}, ${
@@ -180,6 +179,9 @@ const Checkout = () => {
       },
       orderDetailsData,
     };
+
+    console.log(orderDataSave);
+    return;
 
     if (payment == "vnpay") {
       // Your code here to submit the form

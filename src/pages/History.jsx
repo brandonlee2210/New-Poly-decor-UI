@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { CartContext } from "../CartContext";
+import { LoginContext } from "../LoginContext";
 import { Link } from "react-router-dom";
 import { Modal } from "antd";
 
 const History = () => {
   const [orders, setOrders] = useState([]);
   const { carts, addCart, removeCart } = useContext(CartContext);
+  const { userInfo } = useContext(LoginContext);
 
   const isOrdersEmpty = orders.length === 0;
 
@@ -17,12 +19,12 @@ const History = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       let response = await axios.get(
-        "http://localhost:8000/api/v1/ordersByUser/669f63c0a71e0102f6be60a6"
+        "http://localhost:8000/api/v1/ordersByUser/" + userInfo._id
       );
       setOrders(response.data);
     };
     fetchOrders();
-  }, []);
+  }, [userInfo._id]);
 
   const orderStatus = {
     1: "Chờ xác nhận",

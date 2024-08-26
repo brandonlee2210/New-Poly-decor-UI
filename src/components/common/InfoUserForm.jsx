@@ -30,9 +30,9 @@ const InfoUserForm = (props) => {
           (f) => f.DistrictID == district
         )?.DistrictName;
         form.setFieldsValue({
-          fullName: user.fullName,
-          phoneNumber: user.phoneNumber,
-          email: user.email,
+          fullName: user?.fullName || "Gia Bảo",
+          phoneNumber: user?.phoneNumber || "0123456789",
+          email: user.email || "",
           province: namePro || user.province,
           district: nameDis || user.district,
           ward: user.ward,
