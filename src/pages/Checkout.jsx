@@ -97,7 +97,6 @@ const Checkout = () => {
         },
       }
     );
-    console.log(data.data);
     setDistricts(data.data);
   };
 
