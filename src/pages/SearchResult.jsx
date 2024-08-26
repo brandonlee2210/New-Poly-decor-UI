@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductItem from "../components/common/ProductItem";
 import { Pagination, Slider, Select, Button } from "antd";
 import { formatCurrency } from "../utils";
-import { getProducts, getProductsFiltered } from "../api/api";
+import { getProductsFiltered } from "../api/api";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
@@ -14,7 +14,6 @@ const SearchResult = () => {
   const [colors, setColors] = useState([]);
   const [materials, setMaterials] = useState([]);
   const [maxPrice, setMaxPrice] = useState(100000000);
-
   const [variants, setVariants] = useState([]);
   const [current, setCurrent] = useState(1);
   const [products, setProducts] = useState([]);
@@ -22,7 +21,7 @@ const SearchResult = () => {
   const [filters, setFilters] = useState({
     color: null,
     material: null,
-    price: [0, maxPrice],
+    price: [0, 100000000],
     limit: 4,
     page: 1,
   });
@@ -30,7 +29,7 @@ const SearchResult = () => {
   const onChangePage = (page) => {
     setCurrent(page);
     setFilters((prev) => ({ ...prev, page }));
-    let keywordFilter = keyword == "empty" ? "" : keyword;
+    let keywordFilter = keyword === "empty" ? "" : keyword;
     getProductsFiltered({
       ...filters,
       keyword: keywordFilter,
@@ -38,6 +37,7 @@ const SearchResult = () => {
       setProducts(res.data);
     });
   };
+
   useEffect(() => {
     const getAllVariantsColor = async () => {
       const response = await axios.get(
@@ -65,37 +65,41 @@ const SearchResult = () => {
     getAllVariant();
   }, []);
 
-  if (variants.length > 0) {
-    const getMaxPrice = () => {
+  useEffect(() => {
+    if (variants.length > 0) {
       let max = 0;
-      variants.map((product) => {
-        product.variants.map((variant) => {
-          if (variant.price > max) {
-            max = variant.price;
+      variants.forEach((product) => {
+        product.variants.forEach((variant) => {
+          if (+variant.price > max) {
+            max = +variant.price;
           }
         });
       });
-      console.log(max);
-    };
-    getMaxPrice();
-  }
+      setMaxPrice(max);
+    }
+  }, [variants]);
+
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      price: [0, maxPrice],
+    }));
+  }, [maxPrice]);
 
   const handleFilterChange = (field, value) => {
-    console.log(field, value);
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleFilterSubmit = () => {
-    let keywordFilter = keyword == "empty" ? "" : keyword;
+    let keywordFilter = keyword === "empty" ? "" : keyword;
     getProductsFiltered({ ...filters, keyword: keywordFilter }).then((res) => {
-      console.log(res);
       setProducts(res.data);
       setTotal(res.total);
     });
   };
 
   useEffect(() => {
-    let keywordFilter = keyword == "empty" ? "" : keyword;
+    let keywordFilter = keyword === "empty" ? "" : keyword;
     getProductsFiltered({ ...filters, keyword: keywordFilter }).then((res) => {
       setProducts(res.data);
       setTotal(res.total);
@@ -144,7 +148,7 @@ const SearchResult = () => {
               range
               min={0}
               max={maxPrice}
-              defaultValue={filters.price}
+              value={filters.price}
               onChange={(value) => handleFilterChange("price", value)}
               tipFormatter={null}
             />
@@ -158,19 +162,26 @@ const SearchResult = () => {
           </Button>
         </div>
         <div className="">
+          {products.length === 0 && (
+            <div className="text-5xl text-brown-strong font-bold text-center">
+              Không có sản phẩm nào
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-5">
             {products.map((product, index) => (
               <ProductItem key={index} product={product} />
             ))}
           </div>
-          <div className="flex items-center justify-center mt-5">
-            <Pagination
-              current={current}
-              onChange={onChangePage}
-              pageSize={filters.limit}
-              total={total}
-            />
-          </div>
+          {products.length > 0 && (
+            <div className="flex items-center justify-center mt-5">
+              <Pagination
+                current={current}
+                onChange={onChangePage}
+                pageSize={filters.limit}
+                total={total}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
