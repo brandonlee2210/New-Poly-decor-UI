@@ -18,6 +18,7 @@ const Cart = () => {
     (total, product) => +total + +product.quantity,
     0
   );
+  console.log(totalQuantity, "1");
   const totalPrice = carts.reduce(
     (total, product) => total + product.price * product.quantity,
     0
@@ -98,7 +99,6 @@ const Cart = () => {
                     </div>
                   </td>
                   <td className="text-brown-strong p-3 align-middle">
-                  
                     <div className="flex gap-2">
                       <button
                         className=" 

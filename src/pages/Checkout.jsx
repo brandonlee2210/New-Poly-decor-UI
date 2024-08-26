@@ -180,9 +180,6 @@ const Checkout = () => {
       orderDetailsData,
     };
 
-    console.log(orderDataSave);
-    return;
-
     if (payment == "vnpay") {
       // Your code here to submit the form
       // Navigate to the payment page

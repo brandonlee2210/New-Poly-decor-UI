@@ -95,9 +95,9 @@ const ProductDetail = () => {
       const materials = res
         ?.filter((v) => v.variantProductType === "material")
         .map((x) => x.variantProductName);
-      
+
       setColors(colors);
-      
+
       setMaterials(materials);
     });
   }, []);
@@ -123,7 +123,6 @@ const ProductDetail = () => {
 
     if (!material) {
       let variantHasColor = variants.find((variant) => variant.color === color);
-
 
       if (variantHasColor) {
         setVariant(variantHasColor);
@@ -153,19 +152,40 @@ const ProductDetail = () => {
   };
 
   const addToCart = () => {
-    
-    if (quantity > +variant.quantity) {
-      message.error("Bạn đã đặt quá số lượng sản phẩm trong kho");
+    let newQuantity = quantity;
+    // check if the variant in cart plus current quantity is greater than the quantity in stock
+    let existingItem = carts
+      .find(
+        (cart) =>
+          cart.id === product.id &&
+          cart.color === activeColor &&
+          cart.material === material
+      )
+      ?.variants.find(
+        (variant) =>
+          variant.color === activeColor && variant.material === material
+      );
+
+    if (existingItem) {
+      newQuantity += +existingItem.quantity;
+    }
+
+    if (newQuantity > variant.quantity) {
+      message.error(
+        "Số lượng sản phẩm trong giỏ hàng vượt quá số lượng trong kho"
+      );
       return;
     }
+    // check if the variant in cart plus current quantity is greater than the quantity in stock
 
     let cartData = {
       ...product,
       material,
       color: activeColor,
       price: variant.price,
-      quantity, // Thêm số lượng vào dữ liệu giỏ hàng
+      quantity: newQuantity, // Thêm số lượng vào dữ liệu giỏ hàng
     };
+
     addCart(cartData);
     message.success(`Thêm thành công ${product.name} vào giỏ hàng`);
   };
