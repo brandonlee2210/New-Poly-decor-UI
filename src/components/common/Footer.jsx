@@ -167,13 +167,15 @@ const Footer = () => {
       </div>
       <div>
         <Link
-          to={"/"}
+          to={"https://www.facebook.com/profile.php?id=61565207841620"}
+          target="_blank"
           className="inline-block w-[50px] h-[50px] fixed top-[50%] right-0 -translate-y-[51%] mr-3"
         >
           <img src={zaloImage} alt="zalo icon" />
         </Link>
         <Link
-          to={"/"}
+          to={"https://www.facebook.com/profile.php?id=61565207841620"}
+          target="_blank"
           className="inline-block w-[60px] h-[60px] fixed top-[50%] right-0 translate-y-[51%] mr-2"
         >
           <img src={messImage} alt="mess icon" />

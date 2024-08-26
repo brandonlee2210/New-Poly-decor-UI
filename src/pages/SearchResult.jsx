@@ -1,22 +1,28 @@
 import React, { useEffect, useState } from "react";
 import ProductItem from "../components/common/ProductItem";
-import axios from "axios";
 import { Pagination, Slider, Select, Button } from "antd";
 import { formatCurrency } from "../utils";
-import { getProductsFiltered } from "../api/api";
+import { getProducts, getProductsFiltered } from "../api/api";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const { Option } = Select;
 
 const SearchResult = () => {
   const { keyword } = useParams();
+
+  const [colors, setColors] = useState([]);
+  const [materials, setMaterials] = useState([]);
+  const [maxPrice, setMaxPrice] = useState(100000000);
+
+  const [variants, setVariants] = useState([]);
   const [current, setCurrent] = useState(1);
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState({
     color: null,
     material: null,
-    price: [0, 10000000],
+    price: [0, maxPrice],
     limit: 4,
     page: 1,
   });
@@ -32,6 +38,47 @@ const SearchResult = () => {
       setProducts(res.data);
     });
   };
+  useEffect(() => {
+    const getAllVariantsColor = async () => {
+      const response = await axios.get(
+        `http://localhost:8000/api/v1/variantProducts/colors/getall`
+      );
+      setColors(response.data);
+    };
+
+    const getAllVariantsMaterial = async () => {
+      const response = await axios.get(
+        `http://localhost:8000/api/v1/variantProducts/materials/getall`
+      );
+      setMaterials(response.data);
+    };
+
+    const getAllVariant = async () => {
+      const response = await axios.get(
+        `http://localhost:8000/api/v1//variants/getall/productnopagination`
+      );
+      setVariants(response.data);
+    };
+
+    getAllVariantsColor();
+    getAllVariantsMaterial();
+    getAllVariant();
+  }, []);
+
+  if (variants.length > 0) {
+    const getMaxPrice = () => {
+      let max = 0;
+      variants.map((product) => {
+        product.variants.map((variant) => {
+          if (variant.price > max) {
+            max = variant.price;
+          }
+        });
+      });
+      console.log(max);
+    };
+    getMaxPrice();
+  }
 
   const handleFilterChange = (field, value) => {
     console.log(field, value);
@@ -50,7 +97,6 @@ const SearchResult = () => {
   useEffect(() => {
     let keywordFilter = keyword == "empty" ? "" : keyword;
     getProductsFiltered({ ...filters, keyword: keywordFilter }).then((res) => {
-      console.log(res);
       setProducts(res.data);
       setTotal(res.total);
     });
@@ -68,13 +114,12 @@ const SearchResult = () => {
               onChange={(value) => handleFilterChange("color", value)}
               allowClear={true}
             >
-              <Option value="color1">Nâu lạnh</Option>
-              <Option value="color2">Nâu nhạt</Option>
-              <Option value="color3">Xanh nhạt</Option>
-              <Option value="color4">Xanh ô liu</Option>
-              <Option value="color5">Trắng sứ</Option>
-              <Option value="color6">Trắng ngà</Option>
-              {/* Add more options as needed */}
+              {colors.length > 0 &&
+                colors.map((color, index) => (
+                  <Option key={index} value={color.variantProductName}>
+                    {color.variantProductName}
+                  </Option>
+                ))}
             </Select>
           </div>
           <div className="mb-4">
@@ -85,13 +130,12 @@ const SearchResult = () => {
               onChange={(value) => handleFilterChange("material", value)}
               allowClear={true}
             >
-              <Option value="material1">Gỗ sồi</Option>
-              <Option value="material2">Gỗ thông</Option>
-              <Option value="material3">Da bò Úc</Option>
-              <Option value="material4">Da bò Mỹ</Option>
-              <Option value="material5">Kính thường</Option>
-              <Option value="material6">Kính cường lực</Option>
-              {/* Add more options as needed */}
+              {materials.length > 0 &&
+                materials.map((material, index) => (
+                  <Option key={index} value={material.variantProductName}>
+                    {material.variantProductName}
+                  </Option>
+                ))}
             </Select>
           </div>
           <div className="mb-4">
@@ -99,7 +143,7 @@ const SearchResult = () => {
             <Slider
               range
               min={0}
-              max={10000000}
+              max={maxPrice}
               defaultValue={filters.price}
               onChange={(value) => handleFilterChange("price", value)}
               tipFormatter={null}

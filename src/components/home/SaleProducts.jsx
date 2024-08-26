@@ -63,7 +63,7 @@ const SaleProducts = () => {
     },
   ];
 
-  const [saleProducts, setSaleProducts] = useState(saleProducts2);
+  const [saleProducts, setSaleProducts] = useState([]);
 
   useEffect(() => {
     const fetchProducts = async () => {

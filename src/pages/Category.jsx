@@ -9,16 +9,21 @@ import axios from "axios";
 import { Pagination } from "antd";
 
 const Category = () => {
-  const [current, setCurrent] = useState(3);
+  const [current, setCurrent] = useState(1);
   const onChange = (page) => {
-    console.log(page);
+    let fetchVariants = async () => {
+      const response = await axios.get(
+        `http://localhost:8000/api/v1/orders/variants/${name}?page=${page}`
+      );
+
+      setProducts(response.data);
+    };
+
+    fetchVariants();
     setCurrent(page);
   };
   const { name } = useParams();
   const [products, setProducts] = useState([]);
-  console.log(products);
-
-  const [categoryId, setCategoryId] = useState(1);
 
   useEffect(() => {
     let fetchVariants = async () => {

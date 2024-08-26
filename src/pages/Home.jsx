@@ -35,7 +35,7 @@ const Home = () => {
             const response = await axios.get(
               "http://localhost:8000/api/v1/orders/variants/" + category.name
             );
-            return response.data.slice(0, 4);
+            return response.data.data.slice(0, 4);
           })
         );
 
