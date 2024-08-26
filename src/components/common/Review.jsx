@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Avatar, Rate, Typography, notification } from "antd";
 import moment from "moment";
 import axios from "axios";
-
+import image from "../../assets/images/8fc6b76e48a8a8ab33246dc94c8fecf6.webp"
 const { Paragraph } = Typography;
 
 const Review = () => {
@@ -30,21 +30,27 @@ const Review = () => {
           userIds.map((userId) =>
             axios
               .get(`http://localhost:8000/api/v1/auth/${userId}`)
-              .catch(() => ({ data: { userId ,fullName} }))
+              .then((response) => ({
+                userId,
+                fullName: response.data.user.fullName,
+                avatar: image, 
+              }))
+              .catch(() => ({
+                userId,
+                fullName: "Người dùng không tồn tại",
+                avatar: "path/to/default-avatar.png", 
+              }))
           )
         );
-        console.log(usersData);
-
-        const usersInfo = usersData.reduce((acc, { data }) => {
-          if (data.userId) {
-            console.log(data);
-            console.log(acc);
-            
-            acc[data.userId] = data.fullName; 
-          }
+       console.log(usersData);
+       
+        const usersInfo = usersData.reduce((acc, user) => {
+          acc[user.userId] = {
+            fullName: user.fullName,
+            avatar: user.avatar,
+          };
           return acc;
         }, {});
-        console.log("usersInfo", usersInfo);
 
         setUsers(usersInfo);
       } catch (error) {
@@ -53,7 +59,7 @@ const Review = () => {
           description: "Lấy dữ liệu không thành công",
         });
       } finally {
-        setLoading(false); // Kết thúc loading
+        setLoading(false); 
       }
     };
 
@@ -62,21 +68,20 @@ const Review = () => {
 
   return (
     <>
-      {loading && <p>Loading...</p>} {/* Hiển thị thông báo khi đang tải */}
+      {loading && <p>Loading...</p>} 
       {!loading && reviews.length === 0 && <p>Không có đánh giá nào</p>}{" "}
-      {/* Thông báo khi không có đánh giá */}
       {!loading &&
         reviews.map((review, index) => {
-          const user = users[review.userId] || {
-            name: "Người dùng không tồn tại",
-            avatar: "path/to/default-avatar.png", // Đường dẫn đến ảnh đại diện mặc định
+          const user = users[review.userID] || {
+            fullName: "Người dùng không tồn tại",
+            avatar: "path/to/default-avatar.png", 
           };
 
           return (
             <Card key={index} style={{ marginBottom: 16 }}>
               <Card.Meta
-                avatar={<Avatar src={user.avatar} alt={user.name} />}
-                title={user.name}
+                avatar={<Avatar src={user.avatar} alt={user.fullName} />}
+                title={user.fullName} 
                 description={moment(review.createdDate).fromNow()}
               />
               <Rate disabled value={review.rating} style={{ marginTop: 8 }} />

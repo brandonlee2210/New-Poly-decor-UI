@@ -16,7 +16,6 @@ import {
   getAllVariantsProduct,
 } from "../api/api";
 import { Button, message, notification } from "antd";
-import { Button, message, notification } from "antd";
 import moment from "moment";
 
 const colors = [
