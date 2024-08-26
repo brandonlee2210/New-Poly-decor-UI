@@ -111,7 +111,13 @@ const Cart = () => {
                       ring-offset-2
                       ring-blue-500
                       "
-                        onClick={() => decreaseQuantity(product._id)}
+                        onClick={() =>
+                          decreaseQuantity(
+                            product._id,
+                            product.color,
+                            product.material
+                          )
+                        }
                       >
                         -
                       </button>
