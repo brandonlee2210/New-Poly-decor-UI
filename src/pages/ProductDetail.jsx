@@ -75,7 +75,7 @@ const ProductDetail = () => {
   const [variant, setVariant] = useState({});
   const [variants, setVariants] = useState([]);
   const [activeColor, setActiveColor] = useState("");
-  const [material, setMaterial] = useState(materials[0]);
+  const [material, setMaterial] = useState();
   const [color, setColor] = useState(colors[0]);
   const [quantity, setQuantity] = useState(1); // Thêm state cho số lượng
 
@@ -95,7 +95,7 @@ const ProductDetail = () => {
       const materials = res
         ?.filter((v) => v.variantProductType === "material")
         .map((x) => x.variantProductName);
-
+      console.log(colors, "hihi");
       setColors(colors);
 
       setMaterials(materials);
@@ -107,6 +107,7 @@ const ProductDetail = () => {
       setProduct(res);
       setVariants(res.variants);
       setActiveColor(res.variants[0].color);
+      setMaterial(res.variants[0].material);
       setVariant(res.variants[0]);
     });
   }, [id]);
